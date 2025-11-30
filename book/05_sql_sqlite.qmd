@@ -1,0 +1,47 @@
+```yaml
+# 05_sql_sqlite.qmd
+---
+title: "05 — SQL & SQLite (Python)"
+format: html
+execute:
+  echo: true
+---
+
+# SQLite from Python — Create, Insert, Query
+
+This example demonstrates creating a SQLite database, inserting rows, and querying with SQL using Python's `sqlite3`.
+
+```{python}
+import sqlite3
+from pathlib import Path
+
+db_path = Path("db/example.db")
+db_path.parent.mkdir(parents=True, exist_ok=True)
+
+# Connect and create table
+conn = sqlite3.connect(str(db_path))
+cur = conn.cursor()
+cur.execute("""
+CREATE TABLE IF NOT EXISTS people (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    age INTEGER
+)
+""")
+conn.commit()
+
+# Insert sample rows (use parameterized queries)
+people = [(1, "Alice", 30), (2, "Bob", 25), (3, "Charlie", 35)]
+cur.executemany("INSERT OR REPLACE INTO people (id, name, age) VALUES (?, ?, ?)", people)
+conn.commit()
+
+# Query: select all and where age > 30
+print("All rows:")
+for row in cur.execute("SELECT * FROM people"):
+    print(row)
+
+print("\nPeople older than 30:")
+for row in cur.execute("SELECT id, name, age FROM people WHERE age > 30"):
+    print(row)
+
+conn.close()

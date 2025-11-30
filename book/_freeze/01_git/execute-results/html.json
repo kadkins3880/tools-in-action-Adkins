@@ -1,0 +1,12 @@
+{
+  "hash": "f4c2e0098d1d69b2fb9e786c1c9d2fc0",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "```yaml\n# 01_git.qmd\n---\ntitle: \"01 — Git & GitHub\"\nformat: html\nexecute:\n  echo: true\n---\n\n# Git & GitHub — Minimal Examples\n\nThis chapter shows the minimal sequence of commands to create a local repo, commit files, and push to GitHub. These are shell commands; run them in a terminal.\n\n## Quick shell demo\n\n```{bash}\n# Create a new project folder and initialize git\nmkdir -p ~/tools-in-action-demo\ncd ~/tools-in-action-demo\n\n# Initialize a git repository\ngit init\necho \"# Tools in Action Demo\" > README.md\ngit add README.md\ngit commit -m \"chore: initial commit\"\n\n# Create a branch and show branch list\ngit branch -M main\n\n# (Assuming you've created a GitHub repo and replaced the URL below)\n# git remote add origin https://github.com/yourusername/tools-in-action-demo.git\n# git push -u origin main\n\n",
+    "supporting": [
+      "01_git_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

@@ -1,0 +1,38 @@
+```yaml
+# 06_pandas_joins_parquet.qmd
+---
+title: "06 — pandas Joins & Parquet"
+format: html
+execute:
+  echo: true
+---
+
+# pandas merges and saving to Parquet
+
+This chapter creates two small DataFrames, performs a join, and writes the result to Parquet.
+
+```{python}
+import pandas as pd
+from pathlib import Path
+
+Path("data/processed").mkdir(parents=True, exist_ok=True)
+
+# Create two small DataFrames
+df_users = pd.DataFrame({
+    "user_id": [1, 2, 3],
+    "name": ["Alice", "Bob", "Charlie"]
+})
+
+df_scores = pd.DataFrame({
+    "user_id": [1, 2, 3],
+    "score": [95, 88, 76]
+})
+
+# Merge (inner join on user_id)
+df_merged = pd.merge(df_users, df_scores, on="user_id", how="inner")
+print(df_merged)
+
+# Save to parquet (requires pyarrow or fastparquet)
+parquet_path = Path("data/processed/merged.parquet")
+df_merged.to_parquet(parquet_path, index=False)
+print(f"Saved merged DataFrame to {parquet_path}")

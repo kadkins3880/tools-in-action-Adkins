@@ -1,0 +1,41 @@
+```yaml
+# 08_pytest.qmd
+---
+title: "08 — pytest (Simple Tests)"
+format: html
+execute:
+  echo: true
+---
+
+# Minimal pytest example with an on-disk test file and running pytest
+
+Below we create a tiny Python module and a corresponding test file, then run `pytest` programmatically.
+
+```{python}
+# Create a simple module
+from pathlib import Path
+code_dir = Path("tests_demo")
+code_dir.mkdir(exist_ok=True)
+
+module_path = code_dir / "mymath.py"
+module_path.write_text(
+    "def add(a, b):\n"
+    "    return a + b\n"
+)
+
+# Create a pytest test file
+test_path = code_dir / "test_mymath.py"
+test_path.write_text(
+    "from mymath import add\n\n"
+    "def test_add_positive():\n"
+    "    assert add(2, 3) == 5\n\n"
+    "def test_add_negative():\n"
+    "    assert add(-1, -1) == -2\n"
+)
+
+# Run pytest (requires pytest installed)
+import subprocess
+print('Running pytest...')
+result = subprocess.run(['pytest', '-q', str(test_path)], capture_output=True, text=True)
+print(result.stdout)
+print('Exit code:', result.returncode)

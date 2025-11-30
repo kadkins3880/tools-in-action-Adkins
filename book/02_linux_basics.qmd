@@ -1,0 +1,30 @@
+```yaml
+# 02_linux_basics.qmd
+---
+title: "02 — Linux Basics"
+format: html
+execute:
+  echo: true
+---
+
+# Linux Shell Basics
+
+This chapter demonstrates a few essential shell commands used in Linux/Unix environments.
+
+## File and directory operations
+
+```{bash}
+# Print current directory
+pwd
+
+# List files with details
+ls -la
+
+# Create directories and files
+mkdir -p project/data
+echo "id,name" > project/data/sample.csv
+echo "1,Alice" >> project/data/sample.csv
+echo "2,Bob" >> project/data/sample.csv
+
+# View file contents
+cat project/data/sample.csv

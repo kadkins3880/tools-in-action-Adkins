@@ -1,0 +1,39 @@
+
+```yaml
+# 10_quarto_book.qmd
+---
+title: "10 — Quarto Book & Rendering"
+format: html
+execute:
+  echo: true
+---
+
+# Quarto Book — Render and Publish
+
+This chapter shows the minimal `_quarto.yml` and the commands to render and publish the book.
+
+## Example `_quarto.yml` (put in the `book/` folder)
+
+```yaml
+project:
+  type: book
+
+book:
+  title: "Tools in Action — Demo"
+  author: "Your Name"
+  chapters:
+    - index.qmd
+    - 01_git.qmd
+    - 02_linux_basics.qmd
+    - 03_shell_essentials.qmd
+    - 04_makefile.qmd
+    - 05_sql_sqlite.qmd
+    - 06_pandas_joins_parquet.qmd
+    - 07_html_scraping.qmd
+    - 08_pytest.qmd
+    - 09_pytorch_miniloop.qmd
+    - 10_quarto_book.qmd
+
+format:
+  html:
+    theme: default

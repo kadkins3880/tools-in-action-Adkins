@@ -1,0 +1,35 @@
+```yaml
+# 04_makefile.qmd
+---
+title: "04 — Makefile"
+format: html
+execute:
+  echo: true
+---
+
+# Makefile — Build Automation
+
+A Makefile lets you define repeatable commands (targets). Below is a minimal Makefile content. Save this to a file named `Makefile` (no extension) in the repo root.
+
+```{bash}
+cat > Makefile <<'MAKE'
+.PHONY: env data book clean
+
+env:
+	python -m pip install --upgrade pip
+	pip install -r requirements.txt
+
+data:
+	python scripts/make_synth_data.py
+    python scripts/build_features.py
+
+book:
+	quarto render book
+
+clean:
+	rm -rf book/_site book/_freeze data/processed
+
+MAKE
+
+# Show Makefile
+sed -n '1,200p' Makefile

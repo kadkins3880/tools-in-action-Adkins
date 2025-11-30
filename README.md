@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # tools-in-action-Adkins
 
 Quarto book + Python pipeline for STAT 4160 final project.
@@ -31,6 +30,3 @@ make test
 
 # 6. Publish to GitHub Pages (requires Quarto CLI & auth)
 make publish
-=======
-# tools-in-action-Adkins
->>>>>>> cec527db499ba734aeb9fb394b20234d16ec1edf

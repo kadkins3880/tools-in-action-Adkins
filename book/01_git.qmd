@@ -1,0 +1,32 @@
+```yaml
+# 01_git.qmd
+---
+title: "01 — Git & GitHub"
+format: html
+execute:
+  echo: true
+---
+
+# Git & GitHub — Minimal Examples
+
+This chapter shows the minimal sequence of commands to create a local repo, commit files, and push to GitHub. These are shell commands; run them in a terminal.
+
+## Quick shell demo
+
+```{bash}
+# Create a new project folder and initialize git
+mkdir -p ~/tools-in-action-demo
+cd ~/tools-in-action-demo
+
+# Initialize a git repository
+git init
+echo "# Tools in Action Demo" > README.md
+git add README.md
+git commit -m "chore: initial commit"
+
+# Create a branch and show branch list
+git branch -M main
+
+# (Assuming you've created a GitHub repo and replaced the URL below)
+# git remote add origin https://github.com/yourusername/tools-in-action-demo.git
+# git push -u origin main

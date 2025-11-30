@@ -1,0 +1,39 @@
+```yaml
+# 07_html_scraping.qmd
+---
+title: "07 — HTML Scraping (Respect robots.txt)"
+format: html
+execute:
+  echo: true
+---
+
+# Simple web scraping example with robots.txt check
+
+This example fetches a page only if allowed by the site's `robots.txt`. It uses `urllib.robotparser`, `requests`, and `bs4`. Always obey robots.txt and website terms.
+
+```{python}
+import urllib.robotparser
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin, urlparse
+
+site = "https://example.com"
+robots_url = urljoin(site, "/robots.txt")
+
+rp = urllib.robotparser.RobotFileParser()
+rp.set_url(robots_url)
+rp.read()
+
+user_agent = "*"
+path = "/"
+
+if rp.can_fetch(user_agent, urljoin(site, path)):
+    res = requests.get(site)
+    print("Status code:", res.status_code)
+    if res.status_code == 200:
+        soup = BeautifulSoup(res.text, "html.parser")
+        # Print the title tag text
+        title = soup.title.string if soup.title else "(no title)"
+        print("Page title:", title)
+else:
+    print(f"Scraping disallowed by robots.txt for {site}")

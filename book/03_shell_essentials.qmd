@@ -1,0 +1,36 @@
+```yaml
+# 03_shell_essentials.qmd
+---
+title: "03 — Shell Essentials"
+format: html
+execute:
+  echo: true
+---
+
+# Pipes, Redirection, grep, awk, and sed
+
+This chapter shows how to combine small commands with pipes and use basic `awk`/`sed` operations.
+
+## Create a CSV and pipe through tools
+
+```{bash}
+# Make a small CSV
+cat > sample.csv << 'CSV'
+id,name,age
+1,Alice,30
+2,Bob,25
+3,Charlie,35
+CSV
+
+# Count lines (including header)
+wc -l sample.csv
+
+# Print second column (names) using awk
+awk -F',' 'NR>1 {print $2}' sample.csv
+
+# Select rows where age > 30 using awk
+awk -F',' 'NR==1 || $3>30' sample.csv
+
+# Replace header name with sed (in-place demonstration using output redirection)
+sed '1s/name,age,/name_years,age/' sample.csv > sample_fixed.csv
+cat sample_fixed.csv

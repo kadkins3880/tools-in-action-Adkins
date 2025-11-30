@@ -1,0 +1,18 @@
+# index.qmd
+---
+title: "Tools in Action — Quarto Book"
+author: "Kincayde Adkins"
+format: html
+execute:
+  echo: true
+---
+
+# Welcome
+
+This book demonstrates small, runnable examples for the core tools covered in STAT 4160. Each chapter contains one minimal, working example and an explanation written for beginners.
+
+- Each chapter contains short explanations and simple code that you can copy, run, and modify.
+- This book is intended to be rendered with Quarto (`quarto render`).
+
+```{=html}
+<!-- Navigation note: chapters are listed in _quarto.yml -->
