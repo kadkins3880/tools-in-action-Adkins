@@ -1,0 +1,12 @@
+{
+  "hash": "00d38baa8e315015cd26cadcbc649eff",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "```yaml\n# 06_pandas_joins_parquet.qmd\n---\ntitle: \"06 — pandas Joins & Parquet\"\nformat: html\nexecute:\n  echo: true\n---\n\n# pandas merges and saving to Parquet\n\nThis chapter creates two small DataFrames, performs a join, and writes the result to Parquet.\n\nimport pandas as pd\nfrom pathlib import Path\n\nPath(\"data/processed\").mkdir(parents=True, exist_ok=True)\n\n# Create two small DataFrames\ndf_users = pd.DataFrame({\n    \"user_id\": [1, 2, 3],\n    \"name\": [\"Alice\", \"Bob\", \"Charlie\"]\n})\n\ndf_scores = pd.DataFrame({\n    \"user_id\": [1, 2, 3],\n    \"score\": [95, 88, 76]\n})\n\n# Merge (inner join on user_id)\ndf_merged = pd.merge(df_users, df_scores, on=\"user_id\", how=\"inner\")\nprint(df_merged)\n\n# Save to parquet (requires pyarrow or fastparquet)\nparquet_path = Path(\"data/processed/merged.parquet\")\ndf_merged.to_parquet(parquet_path, index=False)\nprint(f\"Saved merged DataFrame to {parquet_path}\")\n\n",
+    "supporting": [
+      "06_pandas_joins_parquet_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

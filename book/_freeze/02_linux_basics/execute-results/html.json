@@ -1,0 +1,12 @@
+{
+  "hash": "991b1465c7865d3013d07cd2967a5edc",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "```yaml\n# 02_linux_basics.qmd\n---\ntitle: \"02 — Linux Basics\"\nformat: html\nexecute:\n  echo: true\n---\n\n# Linux Shell Basics\n\nThis chapter demonstrates a few essential shell commands used in Linux/Unix environments.\n\n## File and directory operations\n\n```{bash}\n# Print current directory\npwd\n\n# List files with details\nls -la\n\n# Create directories and files\nmkdir -p project/data\necho \"id,name\" > project/data/sample.csv\necho \"1,Alice\" >> project/data/sample.csv\necho \"2,Bob\" >> project/data/sample.csv\n\n# View file contents\ncat project/data/sample.csv\n\n",
+    "supporting": [
+      "02_linux_basics_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

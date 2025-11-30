@@ -1,0 +1,12 @@
+{
+  "hash": "dd2abd895e996aaa77738c1180e19e08",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "```yaml\n# 05_sql_sqlite.qmd\n---\ntitle: \"05 — SQL & SQLite (Python)\"\nformat: html\nexecute:\n  echo: true\n---\n\n# SQLite from Python — Create, Insert, Query\n\nThis example demonstrates creating a SQLite database, inserting rows, and querying with SQL using Python's `sqlite3`.\n\nimport sqlite3\nfrom pathlib import Path\n\ndb_path = Path(\"db/example.db\")\ndb_path.parent.mkdir(parents=True, exist_ok=True)\n\n# Connect and create table\nconn = sqlite3.connect(str(db_path))\ncur = conn.cursor()\ncur.execute(\"\"\"\nCREATE TABLE IF NOT EXISTS people (\n    id INTEGER PRIMARY KEY,\n    name TEXT NOT NULL,\n    age INTEGER\n)\n\"\"\")\nconn.commit()\n\n# Insert sample rows (use parameterized queries)\npeople = [(1, \"Alice\", 30), (2, \"Bob\", 25), (3, \"Charlie\", 35)]\ncur.executemany(\"INSERT OR REPLACE INTO people (id, name, age) VALUES (?, ?, ?)\", people)\nconn.commit()\n\n# Query: select all and where age > 30\nprint(\"All rows:\")\nfor row in cur.execute(\"SELECT * FROM people\"):\n    print(row)\n\nprint(\"\\nPeople older than 30:\")\nfor row in cur.execute(\"SELECT id, name, age FROM people WHERE age > 30\"):\n    print(row)\n\nconn.close()\n\n",
+    "supporting": [
+      "05_sql_sqlite_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

@@ -13,55 +13,20 @@ help:
 	@echo "  db        Create/populate sqlite DB (runs scripts/make_sqlite.py)"
 	@echo "  features  Build feature files (runs scripts/build_features.py)"
 	@echo "  book      Render the Quarto book (quarto render book)"
-	@echo "  publish   Publish book to GitHub Pages (quarto publish gh-pages)"
 	@echo "  test      Run pytest"
-	@echo "  lint      Run code style checks (black --check)"
 	@echo "  clean     Remove build artifacts, venv, and generated data"
 
-# Create a lightweight virtual environment and install pinned packages
 env:
-	python -m venv .venv
-	.venv\Scripts\activate && python -m pip install --upgrade pip
-	.venv\Scripts\activate && pip install -r requirements.txt
-
-# Generate synthetic/raw data (script should write into data/raw/)
+    pip install -r requirements.txt
 data:
-	@echo "Running data generation script..."
-	.venv\Scripts\activate && python scripts/make_synth_data.py
-
-# Create or populate a sqlite database (script should write into db/)
+    python scripts/make_synth_data.py
 db:
-	@echo "Creating sqlite database..."
-	.venv\Scripts\activate && python scripts/make_sqlite.py
-
-# Build features from raw data into data/processed/
+    python scripts/make_sqlite.py
 features:
-	@echo "Building features..."
-	.venv\Scripts\activate && python scripts/build_features.py
-
-# Render the Quarto book (assumes Quarto CLI installed on system)
+    python scripts/build_features.py
 book:
-	@echo "Rendering Quarto book..."
-	quarto render book
-
-# Publish the book to GitHub Pages (Quarto will push to gh-pages branch)
-# Note: quarto publish gh-pages requires gh CLI authentication or previously configured git remote.
-publish:
-	@echo "Publishing book to GitHub Pages (book/ -> gh-pages)..."
-	cd book && quarto publish gh-pages --no-prompt
-
-# Run test suite (pytest)
+    quarto render book
 test:
-	.venv\Scripts\activate && pytest -q
-
-# Lint/format check
-lint:
-	.venv\Scripts\activate && black --check .
-
-# Remove virtualenv and generated artifacts
+    pytest -q
 clean:
-	@echo "Cleaning up..."
-	rm -rf .venv
-	rm -rf book/_site book/_freeze
-	rm -rf data/processed data/*.parquet data/*.csv
-	rm -rf db/*.db
+    rm -rf db/*.db data/processed/* book/_site book/_freeze
