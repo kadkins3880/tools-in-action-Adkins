@@ -21,23 +21,23 @@ help:
 # Create a lightweight virtual environment and install pinned packages
 env:
 	python -m venv .venv
-	. .venv/bin/activate && python -m pip install --upgrade pip
-	. .venv/bin/activate && pip install -r requirements.txt
+	.venv\Scripts\activate && python -m pip install --upgrade pip
+	.venv\Scripts\activate && pip install -r requirements.txt
 
 # Generate synthetic/raw data (script should write into data/raw/)
 data:
 	@echo "Running data generation script..."
-	. .venv/bin/activate && python scripts/make_synth_data.py
+	.venv\Scripts\activate && python scripts/make_synth_data.py
 
 # Create or populate a sqlite database (script should write into db/)
 db:
 	@echo "Creating sqlite database..."
-	. .venv/bin/activate && python scripts/make_sqlite.py
+	.venv\Scripts\activate && python scripts/make_sqlite.py
 
 # Build features from raw data into data/processed/
 features:
 	@echo "Building features..."
-	. .venv/bin/activate && python scripts/build_features.py
+	.venv\Scripts\activate && python scripts/build_features.py
 
 # Render the Quarto book (assumes Quarto CLI installed on system)
 book:
@@ -52,11 +52,11 @@ publish:
 
 # Run test suite (pytest)
 test:
-	. .venv/bin/activate && pytest -q
+	.venv\Scripts\activate && pytest -q
 
 # Lint/format check
 lint:
-	. .venv/bin/activate && black --check .
+	.venv\Scripts\activate && black --check .
 
 # Remove virtualenv and generated artifacts
 clean:
