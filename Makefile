@@ -17,16 +17,16 @@ help:
 	@echo "  clean     Remove build artifacts, venv, and generated data"
 
 env:
-    pip install -r requirements.txt
+	pip install -r requirements.txt
 data:
-    python scripts/make_synth_data.py
+	python scripts/make_synth_data.py
 db:
-    python scripts/make_sqlite.py
+	python scripts/make_sqlite.py
 features:
-    python scripts/build_features.py
+	python scripts/build_features.py
 book:
-    quarto render book
+	quarto render book
 test:
-    pytest -q
+	pytest -q
 clean:
-    rm -rf db/*.db data/processed/* book/_site book/_freeze
+	rm -rf db/*.db data/processed/* book/_site book/_freeze
