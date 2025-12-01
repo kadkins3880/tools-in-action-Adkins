@@ -1,3 +1,6 @@
+project:
+  type: book
+
 book:
   title: "Tools-in-Action"
   author: "Kincayde Adkins"

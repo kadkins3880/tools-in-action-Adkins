@@ -27,6 +27,3 @@ make book
 
 # 5. (Optional) Run tests
 make test
-
-# 6. Publish to GitHub Pages (requires Quarto CLI & auth)
-make publish

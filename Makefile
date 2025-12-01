@@ -29,4 +29,7 @@ book:
 test:
 	pytest -q
 clean:
-	rm -rf db/*.db data/processed/* book/_site book/_freeze
+clean:
+	del /Q db\*.db
+	del /Q data\processed\*
+	rmdir /S /Q book\_freeze
