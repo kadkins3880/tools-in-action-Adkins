@@ -24,7 +24,7 @@
     "href": "01_git.html#quick-shell-demo",
     "title": "2  01_git.qmd",
     "section": "3.1 Quick shell demo",
-    "text": "3.1 Quick shell demo\n```zydatt # Create a new project folder and initialize git mkdir -p ~/tools-in-action-demo cd ~/tools-in-action-demo",
+    "text": "3.1 Quick shell demo\n```lxkipr # Create a new project folder and initialize git mkdir -p ~/tools-in-action-demo cd ~/tools-in-action-demo",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>01 — Git & GitHub</span>"
     ]
@@ -44,7 +44,7 @@
     "href": "02_linux_basics.html#file-and-directory-operations",
     "title": "3  02_linux_basics.qmd",
     "section": "4.1 File and directory operations",
-    "text": "4.1 File and directory operations\n```wdavst # Print current directory pwd",
+    "text": "4.1 File and directory operations\n```ehcsno # Print current directory pwd",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>02 — Linux Basics</span>"
     ]
@@ -64,7 +64,7 @@
     "href": "03_shell_essentials.html#create-a-csv-and-pipe-through-tools",
     "title": "4  03_shell_essentials.qmd",
     "section": "5.1 Create a CSV and pipe through tools",
-    "text": "5.1 Create a CSV and pipe through tools\n```hgfqjy # Make a small CSV cat &gt; sample.csv &lt;&lt; ‘CSV’ id,name,age 1,Alice,30 2,Bob,25 3,Charlie,35 CSV",
+    "text": "5.1 Create a CSV and pipe through tools\n```lwdxct # Make a small CSV cat &gt; sample.csv &lt;&lt; ‘CSV’ id,name,age 1,Alice,30 2,Bob,25 3,Charlie,35 CSV",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>03 — Shell Essentials</span>"
     ]

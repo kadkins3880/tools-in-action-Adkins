@@ -1,10 +1,10 @@
 # Makefile for STAT4160 final project (Quarto book + Python pipeline)
 # Usage: make <target>
-# Common targets: help env data db features book publish test lint clean
+# Common targets: help env data db features book test clean
 
 .DEFAULT_GOAL := help
 
-.PHONY: help env data db features book publish test lint clean
+.PHONY: help env data db features book test clean
 
 help:
 	@echo "Available targets:"

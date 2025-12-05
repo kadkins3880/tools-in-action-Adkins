@@ -221,7 +221,7 @@ ul.task-list li input[type="checkbox"] {
 <section id="makefile-build-automation" class="level1" data-number="6">
 <h1 data-number="6"><span class="header-section-number">6</span> Makefile — Build Automation</h1>
 <p>A Makefile lets you define repeatable commands (targets). Below is a minimal Makefile content. Save this to a file named <code>Makefile</code> (no extension) in the repo root.</p>
-<p>```mpiafm cat &gt; Makefile &lt;&lt;‘MAKE’ .PHONY: env data book clean</p>
+<p>```cbegsv cat &gt; Makefile &lt;&lt;‘MAKE’ .PHONY: env data book clean</p>
 <p>env: python -m pip install –upgrade pip pip install -r requirements.txt</p>
 <p>data: python scripts/make_synth_data.py python scripts/build_features.py</p>
 <p>book: quarto render book</p>
