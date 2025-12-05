@@ -14,7 +14,7 @@ help:
 	@echo "  features  Build feature files (runs scripts/build_features.py)"
 	@echo "  book      Render the Quarto book (quarto render book)"
 	@echo "  test      Run pytest"
-	@echo "  clean     Remove build artifacts, venv, and generated data"
+	@echo "  clean     Remove build artifacts and generated data"
 
 env:
 	pip install -r requirements.txt
