@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>3&nbsp; 02_linux_basics.qmd – Tools-in-Action</title>
+<title>5&nbsp; 04_makefile.qmd – Tools-in-Action</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,8 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./03_shell_essentials.html" rel="next">
-<link href="./01_git.html" rel="prev">
+<link href="./05_sql_sqlite.html" rel="next">
+<link href="./03_shell_essentials.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -83,7 +83,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02_linux_basics.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">02 — Linux Basics</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_makefile.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">04 — Makefile</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -124,7 +124,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02_linux_basics.html" class="sidebar-item-text sidebar-link active">
+  <a href="./02_linux_basics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">02 — Linux Basics</span></span></a>
   </div>
 </li>
@@ -136,7 +136,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_makefile.html" class="sidebar-item-text sidebar-link">
+  <a href="./04_makefile.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">04 — Makefile</span></span></a>
   </div>
 </li>
@@ -181,28 +181,15 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#yaml" id="toc-yaml" class="nav-link active" data-scroll-target="#yaml"><span class="header-section-number">3.1</span> ```yaml</a></li>
-  <li><a href="#linux-shell-basics" id="toc-linux-shell-basics" class="nav-link" data-scroll-target="#linux-shell-basics"><span class="header-section-number">4</span> Linux Shell Basics</a>
-  <ul class="collapse">
-  <li><a href="#file-and-directory-operations" id="toc-file-and-directory-operations" class="nav-link" data-scroll-target="#file-and-directory-operations"><span class="header-section-number">4.1</span> File and directory operations</a></li>
-  </ul></li>
-  <li><a href="#list-files-with-details" id="toc-list-files-with-details" class="nav-link" data-scroll-target="#list-files-with-details"><span class="header-section-number">5</span> List files with details</a></li>
-  <li><a href="#create-directories-and-files" id="toc-create-directories-and-files" class="nav-link" data-scroll-target="#create-directories-and-files"><span class="header-section-number">6</span> Create directories and files</a></li>
-  <li><a href="#view-file-contents" id="toc-view-file-contents" class="nav-link" data-scroll-target="#view-file-contents"><span class="header-section-number">7</span> View file contents</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">02_linux_basics.qmd</span></h1>
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">04_makefile.qmd</span></h1>
 </div>
 
 
@@ -219,32 +206,42 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="yaml" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="yaml"><span class="header-section-number">3.1</span> ```yaml</h2>
-<p>title: “02 — Linux Basics” format: html execute: echo: true —</p>
-</section>
-<section id="linux-shell-basics" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Linux Shell Basics</h1>
-<p>This chapter demonstrates a few essential shell commands used in Linux/Unix environments.</p>
-<section id="file-and-directory-operations" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="file-and-directory-operations"><span class="header-section-number">4.1</span> File and directory operations</h2>
-<p>```ehcsno # Print current directory pwd</p>
-</section>
-</section>
-<section id="list-files-with-details" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> List files with details</h1>
-<p>ls -la</p>
-</section>
-<section id="create-directories-and-files" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Create directories and files</h1>
-<p>mkdir -p project/data echo “id,name” &gt; project/data/sample.csv echo “1,Alice” &gt;&gt; project/data/sample.csv echo “2,Bob” &gt;&gt; project/data/sample.csv</p>
-</section>
-<section id="view-file-contents" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> View file contents</h1>
-<p>cat project/data/sample.csv</p>
+<p>Introduction — This Makefile provides convenient targets for common development tasks: showing help, creating the environment, generating data, building a small local DB, producing feature files, rendering the Quarto book, running tests, and cleaning generated artifacts. Explanations below cover Makefile syntax and the behavior of each target.</p>
+<pre class="{makefile}"><code>.DEFAULT_GOAL := help
+
+.PHONY: help env data db features book test clean
+
+help:
+    @echo "Available targets:"
+    @echo "  env       Create virtualenv and install Python dependencies"
+    @echo "  data      Generate raw/synthetic data (runs scripts/make_synth_data.py)"
+    @echo "  db        Create/populate sqlite DB (runs scripts/make_sqlite.py)"
+    @echo "  features  Build feature files (runs scripts/build_features.py)"
+    @echo "  book      Render the Quarto book (quarto render book)"
+    @echo "  test      Run pytest"
+    @echo "  clean     Remove build artifacts and generated data"</code></pre>
+<p>Explanation for the above code: - <code>.DEFAULT_GOAL := help</code> sets the default target that runs when no target is specified; here it shows the help text. - <code>.PHONY: ...</code> declares phony targets that are not file names; this prevents conflicts if a file with the same name exists and ensures the recipes always run. - <code>help:</code> defines a target whose recipe prints the list of available targets. Each <code>@echo</code> prints a line; the leading <code>@</code> suppresses echoing the command itself, so only the text is shown when <code>make</code> runs.</p>
+<pre class="{makefile}"><code>env:
+    pip install -r requirements.txt
+data:
+    python scripts/make_synth_data.py
+db:
+    python scripts/make_sqlite.py
+features:
+    python scripts/build_features.py
+book:
+    quarto render book
+test:
+    pytest -q</code></pre>
+<p>Explanation for the above code: - <code>env:</code> runs <code>pip install -r requirements.txt</code> to install Python dependencies. On systems where a virtual environment is preferred, create/activate the venv before calling this target or modify the recipe to create one. - <code>data:</code> runs the Python data-generation script <code>scripts/make_synth_data.py</code> to populate <code>data/raw/</code>. - <code>db:</code> runs <code>scripts/make_sqlite.py</code> to create/populate a local SQLite database (if that script exists). - <code>features:</code> runs <code>scripts/build_features.py</code> to create processed feature files (e.g., <code>data/processed/</code>). - <code>book:</code> runs <code>quarto render book</code> to render the Quarto project into the <code>book/</code> output. - <code>test:</code> runs <code>pytest -q</code> to execute the test suite; <code>-q</code> makes pytest quieter in its output.</p>
+<pre class="{makefile}"><code>clean:
+clean:
+    del /Q db\*.db
+    del /Q data\processed\*
+    rmdir /S /Q book\_freeze</code></pre>
+<p>Explanation for the above code: - The <code>clean</code> target is intended to remove generated artifacts. In this Makefile the <code>clean</code> target appears twice (an empty definition followed by the recipe). Duplicate target definitions can be confusing — combine into a single <code>clean:</code> definition with its recipe for clarity. - The commands shown use Windows <code>cmd</code>/PowerShell syntax: - <code>del /Q db\*.db</code> deletes <code>.db</code> files quietly. - <code>del /Q data\processed\*</code> deletes files in <code>data\processed</code>. - <code>rmdir /S /Q book\_freeze</code> removes the <code>book_freeze</code> directory and its contents quietly. - Portability notes: - <code>del</code> and <code>rmdir</code> are Windows commands and will not work in a Unix shell. If you run this Makefile under a Unix-like shell (bash, zsh, CI runners), replace these with portable Unix equivalents (for example <code>rm -f db/*.db</code> and <code>rm -rf data/processed/* book/_freeze</code>) or add conditional logic in the Makefile to detect the platform. - Recipes in Makefiles must be indented with a <strong>tab</strong> character, not spaces. Ensure your editor preserves tabs for recipe lines. - Suggestion: consolidate the duplicate <code>clean</code> target into one, and consider adding a cross-platform <code>clean</code> recipe or two separate targets (e.g., <code>clean-windows</code> and <code>clean-unix</code>) to avoid accidental failures on different systems.</p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -649,13 +646,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./01_git.html" class="pagination-link" aria-label="01 — Git &amp; GitHub">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">01 — Git &amp; GitHub</span></span>
+      <a href="./03_shell_essentials.html" class="pagination-link" aria-label="03 — Shell Essentials">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">03 — Shell Essentials</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./03_shell_essentials.html" class="pagination-link" aria-label="03 — Shell Essentials">
-        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">03 — Shell Essentials</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./05_sql_sqlite.html" class="pagination-link" aria-label="05 — SQL &amp; SQLite (Python)">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">05 — SQL &amp; SQLite (Python)</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

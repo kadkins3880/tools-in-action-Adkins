@@ -1,4 +1,3 @@
-```yaml
 # 03_shell_essentials.qmd
 ---
 title: "03 — Shell Essentials"
@@ -7,30 +6,44 @@ execute:
   echo: true
 ---
 
-# Pipes, Redirection, grep, awk, and sed
+Introduction — This file demonstrates a Python feature-building script and the shell commands used to run it and perform quick, lightweight inspections. Explanations below cover only the shell commands.
 
-This chapter shows how to combine small commands with pipes and use basic `awk`/`sed` operations.
+```{python}
+from pathlib import Path
+import pandas as pd
+import numpy as np
 
-## Create a CSV and pipe through tools
+Path("data/processed").mkdir(parents=True, exist_ok=True)
+df = pd.read_csv("data/raw/synth_prices.csv", parse_dates=["date"])
+df = df.sort_values("date").reset_index(drop=True)
+df["log_return"] = df["price"].pct_change().apply(lambda x: np.log1p(x) if pd.notna(x) else 0.0)
+df["sma_5"] = df["price"].rolling(5, min_periods=1).mean().round(6)
+df["weekday"] = df["date"].dt.isocalendar().day.astype("int8")
+df.to_csv("data/processed/synth_features.csv", index=False)
+print("Wrote data/processed/synth_features.csv")
+```
 
 ```{bash}
-# Make a small CSV
-cat > sample.csv << 'CSV'
-id,name,age
-1,Alice,30
-2,Bob,25
-3,Charlie,35
-CSV
+set -euo pipefail
+python3 scripts/build_features.py
+```
 
-# Count lines (including header)
-wc -l sample.csv
+The `set -euo pipefail` line is a Bash safety idiom that makes scripts fail-fast and helps surface errors:
+- `-e` exits immediately if any command returns a non-zero status.
+- `-u` treats unset variables as an error and exits.
+- `-o pipefail` causes a pipeline to return a failure status if any command in the pipeline fails.
+Together they reduce silent failures in shell scripts.
 
-# Print second column (names) using awk
-awk -F',' 'NR>1 {print $2}' sample.csv
+`python3 scripts/build_features.py` runs the Python script using the `python3` interpreter found on `PATH`. When run under the `set -euo pipefail` settings, if the script exits with a non-zero status the shell will immediately stop execution.
 
-# Select rows where age > 30 using awk
-awk -F',' 'NR==1 || $3>30' sample.csv
+```{bash}
+echo "Rows in processed file:"
+wc -l data/processed/synth_features.csv || true
+echo "First 5 lines:"
+head -n 6 data/processed/synth_features.csv || true
+```
 
-# Replace header name with sed (in-place demonstration using output redirection)
-sed '1s/name,age,/name_years,age/' sample.csv > sample_fixed.csv
-cat sample_fixed.csv
+- `echo "Rows in processed file:"` prints a human-readable label to separate output sections.
+- `wc -l <file>` prints the number of lines in the file. This includes the header row if the CSV has one, so the result is typically `1 + number_of_data_rows`.
+- `head -n 6 <file>` prints the first 6 lines of the file. Using `-n 6` is a common pattern to show the header plus the first 5 data rows for quick verification.
+- The `|| true` appended to `wc` and `head` prevents the shell from exiting with a non-zero status when those commands fail (for example if the file does not exist). This is helpful when the surrounding script is run with `set -e`; it allows the inspection step to fail harmlessly while still showing any available output.

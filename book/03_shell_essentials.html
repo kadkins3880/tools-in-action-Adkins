@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -181,22 +216,8 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#yaml" id="toc-yaml" class="nav-link active" data-scroll-target="#yaml"><span class="header-section-number">4.1</span> ```yaml</a></li>
-  <li><a href="#pipes-redirection-grep-awk-and-sed" id="toc-pipes-redirection-grep-awk-and-sed" class="nav-link" data-scroll-target="#pipes-redirection-grep-awk-and-sed"><span class="header-section-number">5</span> Pipes, Redirection, grep, awk, and sed</a>
-  <ul class="collapse">
-  <li><a href="#create-a-csv-and-pipe-through-tools" id="toc-create-a-csv-and-pipe-through-tools" class="nav-link" data-scroll-target="#create-a-csv-and-pipe-through-tools"><span class="header-section-number">5.1</span> Create a CSV and pipe through tools</a></li>
-  </ul></li>
-  <li><a href="#count-lines-including-header" id="toc-count-lines-including-header" class="nav-link" data-scroll-target="#count-lines-including-header"><span class="header-section-number">6</span> Count lines (including header)</a></li>
-  <li><a href="#print-second-column-names-using-awk" id="toc-print-second-column-names-using-awk" class="nav-link" data-scroll-target="#print-second-column-names-using-awk"><span class="header-section-number">7</span> Print second column (names) using awk</a></li>
-  <li><a href="#select-rows-where-age-30-using-awk" id="toc-select-rows-where-age-30-using-awk" class="nav-link" data-scroll-target="#select-rows-where-age-30-using-awk"><span class="header-section-number">8</span> Select rows where age &gt; 30 using awk</a></li>
-  <li><a href="#replace-header-name-with-sed-in-place-demonstration-using-output-redirection" id="toc-replace-header-name-with-sed-in-place-demonstration-using-output-redirection" class="nav-link" data-scroll-target="#replace-header-name-with-sed-in-place-demonstration-using-output-redirection"><span class="header-section-number">9</span> Replace header name with sed (in-place demonstration using output redirection)</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -220,36 +241,40 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="yaml" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="yaml"><span class="header-section-number">4.1</span> ```yaml</h2>
-<p>title: “03 — Shell Essentials” format: html execute: echo: true —</p>
-</section>
-<section id="pipes-redirection-grep-awk-and-sed" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Pipes, Redirection, grep, awk, and sed</h1>
-<p>This chapter shows how to combine small commands with pipes and use basic <code>awk</code>/<code>sed</code> operations.</p>
-<section id="create-a-csv-and-pipe-through-tools" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="create-a-csv-and-pipe-through-tools"><span class="header-section-number">5.1</span> Create a CSV and pipe through tools</h2>
-<p>```lwdxct # Make a small CSV cat &gt; sample.csv &lt;&lt; ‘CSV’ id,name,age 1,Alice,30 2,Bob,25 3,Charlie,35 CSV</p>
-</section>
-</section>
-<section id="count-lines-including-header" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Count lines (including header)</h1>
-<p>wc -l sample.csv</p>
-</section>
-<section id="print-second-column-names-using-awk" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Print second column (names) using awk</h1>
-<p>awk -F’,’ ‘NR&gt;1 {print $2}’ sample.csv</p>
-</section>
-<section id="select-rows-where-age-30-using-awk" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> Select rows where age &gt; 30 using awk</h1>
-<p>awk -F’,’ ‘NR==1 || $3&gt;30’ sample.csv</p>
-</section>
-<section id="replace-header-name-with-sed-in-place-demonstration-using-output-redirection" class="level1" data-number="9">
-<h1 data-number="9"><span class="header-section-number">9</span> Replace header name with sed (in-place demonstration using output redirection)</h1>
-<p>sed ‘1s/name,age,/name_years,age/’ sample.csv &gt; sample_fixed.csv cat sample_fixed.csv</p>
+<p>Introduction — This file demonstrates a Python feature-building script and the shell commands used to run it and perform quick, lightweight inspections. Explanations below cover only the shell commands.</p>
+<div id="5a5309cd" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"data/processed"</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/raw/synth_prices.csv"</span>, parse_dates<span class="op">=</span>[<span class="st">"date"</span>])</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.sort_values(<span class="st">"date"</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"log_return"</span>] <span class="op">=</span> df[<span class="st">"price"</span>].pct_change().<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.log1p(x) <span class="cf">if</span> pd.notna(x) <span class="cf">else</span> <span class="fl">0.0</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"sma_5"</span>] <span class="op">=</span> df[<span class="st">"price"</span>].rolling(<span class="dv">5</span>, min_periods<span class="op">=</span><span class="dv">1</span>).mean().<span class="bu">round</span>(<span class="dv">6</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"weekday"</span>] <span class="op">=</span> df[<span class="st">"date"</span>].dt.isocalendar().day.astype(<span class="st">"int8"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>df.to_csv(<span class="st">"data/processed/synth_features.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Wrote data/processed/synth_features.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Wrote data/processed/synth_features.csv</code></pre>
+</div>
+</div>
+<pre class="{bash}"><code>set -euo pipefail
+python3 scripts/build_features.py</code></pre>
+<p>The <code>set -euo pipefail</code> line is a Bash safety idiom that makes scripts fail-fast and helps surface errors: - <code>-e</code> exits immediately if any command returns a non-zero status. - <code>-u</code> treats unset variables as an error and exits. - <code>-o pipefail</code> causes a pipeline to return a failure status if any command in the pipeline fails. Together they reduce silent failures in shell scripts.</p>
+<p><code>python3 scripts/build_features.py</code> runs the Python script using the <code>python3</code> interpreter found on <code>PATH</code>. When run under the <code>set -euo pipefail</code> settings, if the script exits with a non-zero status the shell will immediately stop execution.</p>
+<pre class="{bash}"><code>echo "Rows in processed file:"
+wc -l data/processed/synth_features.csv || true
+echo "First 5 lines:"
+head -n 6 data/processed/synth_features.csv || true</code></pre>
+<ul>
+<li><code>echo "Rows in processed file:"</code> prints a human-readable label to separate output sections.</li>
+<li><code>wc -l &lt;file&gt;</code> prints the number of lines in the file. This includes the header row if the CSV has one, so the result is typically <code>1 + number_of_data_rows</code>.</li>
+<li><code>head -n 6 &lt;file&gt;</code> prints the first 6 lines of the file. Using <code>-n 6</code> is a common pattern to show the header plus the first 5 data rows for quick verification.</li>
+<li>The <code>|| true</code> appended to <code>wc</code> and <code>head</code> prevents the shell from exiting with a non-zero status when those commands fail (for example if the file does not exist). This is helpful when the surrounding script is run with <code>set -e</code>; it allows the inspection step to fail harmlessly while still showing any available output.</li>
+</ul>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

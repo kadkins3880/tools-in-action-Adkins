@@ -1,0 +1,12 @@
+{
+  "hash": "2343566cd92d9dbf262cc5f02f837195",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "```yaml\n# 09_pytorch_miniloop.qmd\n---\ntitle: \"09 — PyTorch Minimal Training Loop\"\nformat: html\nexecute:\n  echo: true\n---\n\n# Tiny PyTorch training loop (linear regression)\n\nThis example trains a single linear parameter to fit `y = 2*x + 1` using mean squared error. It is intentionally tiny so it runs quickly.\n\nimport torch\nfrom torch import nn\nfrom torch.utils.data import DataLoader, TensorDataset\n\n# Create synthetic data\nx = torch.linspace(-1, 1, 100).unsqueeze(1)  # shape (100,1)\ny = 2 * x + 1 + 0.1 * torch.randn_like(x)     # y = 2x + 1 + noise\n\ndataset = TensorDataset(x, y)\nloader = DataLoader(dataset, batch_size=16, shuffle=True)\n\n# Simple linear model\nmodel = nn.Linear(1, 1)\nloss_fn = nn.MSELoss()\noptimizer = torch.optim.SGD(model.parameters(), lr=0.1)\n\n# Training loop\nfor epoch in range(20):\n    total_loss = 0.0\n    for xb, yb in loader:\n        optimizer.zero_grad()\n        preds = model(xb)\n        loss = loss_fn(preds, yb)\n        loss.backward()\n        optimizer.step()\n        total_loss += loss.item() * xb.size(0)\n    print(f\"Epoch {epoch+1:02d}, Loss: {total_loss/len(dataset):.4f}\")\n\n# Print learned parameters\nw = model.weight.item()\nb = model.bias.item()\nprint(f\"Learned weight: {w:.3f}, bias: {b:.3f}\")\n\n",
+    "supporting": [
+      "09_pytorch_miniloop_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

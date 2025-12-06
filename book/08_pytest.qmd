@@ -1,4 +1,3 @@
-```yaml
 # 08_pytest.qmd
 ---
 title: "08 — pytest (Simple Tests)"
@@ -7,35 +6,59 @@ execute:
   echo: true
 ---
 
-# Minimal pytest example with an on-disk test file and running pytest
-
-Below we create a tiny Python module and a corresponding test file, then run `pytest` programmatically.
+Introduction — This page contains simple pytest tests that validate processed CSV/Parquet artifacts and demonstrate how to run the test suite from the repository root. Explanations below describe what each test asserts and how the test run is invoked.
 
 ```{python}
-# Create a simple module
-from pathlib import Path
-code_dir = Path("tests_demo")
-code_dir.mkdir(exist_ok=True)
+import os
+import pandas as pd
 
-module_path = code_dir / "mymath.py"
-module_path.write_text(
-    "def add(a, b):\n"
-    "    return a + b\n"
-)
+def test_synth_features_columns_and_no_nans_price():
+    df = pd.read_csv("data/processed/synth_features.csv")
+    expected = {"date","price","volume","log_return","sma_5","weekday"}
+    assert expected.issubset(set(df.columns)), f"Missing expected cols: {expected - set(df.columns)}"
+    assert df["price"].isna().sum() == 0
 
-# Create a pytest test file
-test_path = code_dir / "test_mymath.py"
-test_path.write_text(
-    "from mymath import add\n\n"
-    "def test_add_positive():\n"
-    "    assert add(2, 3) == 5\n\n"
-    "def test_add_negative():\n"
-    "    assert add(-1, -1) == -2\n"
-)
+def test_date_monotonic_in_parquet():
+    df = pd.read_parquet("data/processed/synth.parquet")
+    df["date"] = pd.to_datetime(df["date"])
+    assert df["date"].is_monotonic_increasing, "Date column is not monotonic increasing"
 
-# Run pytest (requires pytest installed)
-import subprocess
-print('Running pytest...')
-result = subprocess.run(['pytest', '-q', str(test_path)], capture_output=True, text=True)
-print(result.stdout)
-print('Exit code:', result.returncode)
+def test_parquet_exists_and_size():
+    path = "data/processed/synth.parquet"
+    assert os.path.exists(path), "Parquet file missing"
+    assert os.path.getsize(path) > 0, "Parquet file exists but is empty"
+```
+
+Explanation for the above tests:
+
+- `test_synth_features_columns_and_no_nans_price()`  
+  - Loads `data/processed/synth_features.csv` into a DataFrame.  
+  - Verifies the presence of the expected columns: `date`, `price`, `volume`, `log_return`, `sma_5`, and `weekday`. If any are missing the assertion fails and the failure message shows which columns are absent.  
+  - Verifies there are no missing (`NaN`) values in the `price` column; the test fails if any `NaN`s are present. These checks ensure the processed CSV has the required schema and that the `price` column is complete.
+
+- `test_date_monotonic_in_parquet()`  
+  - Reads `data/processed/synth.parquet` into a DataFrame and ensures the `date` column is parsed as datetimes.  
+  - Asserts that `df["date"].is_monotonic_increasing` is `True`, i.e., the date column is strictly non-decreasing down the rows. This guards against unordered or shuffled time-series data which can break time-based analyses.
+
+- `test_parquet_exists_and_size()`  
+  - Asserts that the Parquet file `data/processed/synth.parquet` exists on disk.  
+  - Asserts the file size is greater than zero (not empty). This is a basic sanity check that a previous processing step successfully wrote the Parquet artifact.
+
+Notes on test design:
+- Tests use straightforward, fast I/O checks and pandas semantics to assert correctness; keep tests small and deterministic to make them reliable in CI.
+- Assertion messages provide actionable feedback (e.g., which columns are missing) to speed debugging when tests fail.
+
+```{bash}
+set -euo pipefail
+pytest -q
+```
+
+Explanation for the above commands:
+
+- `set -euo pipefail` is a shell safety idiom used when running the test command from a shell script or CI step:
+  - `-e` exits immediately if any command returns a non-zero status.
+  - `-u` treats unset variables as errors.
+  - `-o pipefail` causes a pipeline to return a non-zero exit if any component fails.
+  Using this ensures the test run fails loudly and stops subsequent shell commands when a problem occurs.
+
+- `pytest -q` runs the pytest test discovery and execution in quiet mode (`-q`), which produces concise output (dots or short summaries) suitable for CI logs or quick local runs. Run this from the repository root so file paths like `data/processed/synth_features.csv` and `data/processed/synth.parquet` resolve correctly.

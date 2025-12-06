@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>5&nbsp; 04_makefile.qmd – Tools-in-Action</title>
+<title>2&nbsp; 01_git.qmd – Tools-in-Action</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,8 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./05_sql_sqlite.html" rel="next">
-<link href="./03_shell_essentials.html" rel="prev">
+<link href="./02_linux_basics.html" rel="next">
+<link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -83,7 +83,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04_makefile.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">04 — Makefile</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_git.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">01 — Git &amp; GitHub</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -118,7 +118,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01_git.html" class="sidebar-item-text sidebar-link">
+  <a href="./01_git.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">01 — Git &amp; GitHub</span></span></a>
   </div>
 </li>
@@ -136,7 +136,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04_makefile.html" class="sidebar-item-text sidebar-link active">
+  <a href="./04_makefile.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">04 — Makefile</span></span></a>
   </div>
 </li>
@@ -181,23 +181,15 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#yaml" id="toc-yaml" class="nav-link active" data-scroll-target="#yaml"><span class="header-section-number">5.1</span> ```yaml</a></li>
-  <li><a href="#makefile-build-automation" id="toc-makefile-build-automation" class="nav-link" data-scroll-target="#makefile-build-automation"><span class="header-section-number">6</span> Makefile — Build Automation</a></li>
-  <li><a href="#show-makefile" id="toc-show-makefile" class="nav-link" data-scroll-target="#show-makefile"><span class="header-section-number">7</span> Show Makefile</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">04_makefile.qmd</span></h1>
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">01_git.qmd</span></h1>
 </div>
 
 
@@ -214,26 +206,27 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="yaml" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="yaml"><span class="header-section-number">5.1</span> ```yaml</h2>
-<p>title: “04 — Makefile” format: html execute: echo: true —</p>
-</section>
-<section id="makefile-build-automation" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Makefile — Build Automation</h1>
-<p>A Makefile lets you define repeatable commands (targets). Below is a minimal Makefile content. Save this to a file named <code>Makefile</code> (no extension) in the repo root.</p>
-<p>```cbegsv cat &gt; Makefile &lt;&lt;‘MAKE’ .PHONY: env data book clean</p>
-<p>env: python -m pip install –upgrade pip pip install -r requirements.txt</p>
-<p>data: python scripts/make_synth_data.py python scripts/build_features.py</p>
-<p>book: quarto render book</p>
-<p>clean: rm -rf book/_site book/_freeze data/processed</p>
-<p>MAKE</p>
-</section>
-<section id="show-makefile" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Show Makefile</h1>
-<p>sed -n ‘1,200p’ Makefile</p>
+<p>Introduction — This file shows a compact workflow for initializing a Git repository, configuring identity, making commits, creating and pushing a feature branch to GitHub, and tagging a release. Replace placeholder values (for example <code>your-username</code>, <code>YourLastName</code>, <code>Your Name</code>, and the email) with your actual values before running these commands.</p>
+<pre class="{bash}"><code>git init
+git branch -M main
+git remote add origin https://github.com/your-username/tools-in-action-YourLastName.git</code></pre>
+<p>The above commands initialize a new Git repository in the current directory (<code>git init</code>), rename the current branch to <code>main</code> (<code>git branch -M main</code> forces the rename), and add a remote named <code>origin</code> that points to a GitHub repository at the specified URL (<code>git remote add origin &lt;url&gt;</code>). Replace the URL placeholders with your GitHub username and repository name.</p>
+<pre class="{bash}"><code>git config user.name "Your Name"
+git config user.email "12345678+your_github_name@users.noreply.github.com"</code></pre>
+<p>These commands set the committer identity for this repository. <code>git config user.name</code> sets the display name recorded in commits and <code>git config user.email</code> sets the email address recorded in commits. Use <code>--global</code> to set these values for all repositories on the machine.</p>
+<pre class="{bash}"><code>git add .
+git commit -m "chore: scaffold Quarto book"</code></pre>
+<p><code>git add .</code> stages all new, modified, and deleted files from the current directory and its subdirectories for the next commit. <code>git commit -m "&lt;message&gt;"</code> creates a new commit with the staged changes and attaches the provided commit message. The example uses a Conventional Commit-style message but any message is valid.</p>
+<pre class="{bash}"><code>git checkout -b feat/sql-chapter
+git add book/05_sql_sqlite.qmd
+git commit -m "docs(sql): add initial join examples"
+git push -u origin feat/sql-chapter</code></pre>
+<p><code>git checkout -b &lt;branch&gt;</code> creates a new branch and switches to it. <code>git add &lt;path&gt;</code> stages a specific file for commit. <code>git commit -m "&lt;message&gt;"</code> commits the staged change. <code>git push -u origin &lt;branch&gt;</code> pushes the new branch to the <code>origin</code> remote and sets the local branch to track the remote branch so future <code>git push</code>/<code>git pull</code> can be run without specifying the remote and branch.</p>
+<pre class="{bash}"><code>git tag v1.0-tools-in-action
+git push origin v1.0-tools-in-action</code></pre>
+<p><code>git tag &lt;name&gt;</code> creates a tag at the current commit to mark a release or milestone. <code>git push origin &lt;tag&gt;</code> pushes that tag to the <code>origin</code> remote. To push all tags at once use <code>git push origin --tags</code> (not shown above).</p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -638,13 +631,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./03_shell_essentials.html" class="pagination-link" aria-label="03 — Shell Essentials">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">03 — Shell Essentials</span></span>
+      <a href="./index.html" class="pagination-link" aria-label="Tools in Action — Quarto Book">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Tools in Action — Quarto Book</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./05_sql_sqlite.html" class="pagination-link" aria-label="05 — SQL &amp; SQLite (Python)">
-        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">05 — SQL &amp; SQLite (Python)</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./02_linux_basics.html" class="pagination-link" aria-label="02 — Linux Basics">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">02 — Linux Basics</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

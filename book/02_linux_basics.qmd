@@ -1,4 +1,3 @@
-```yaml
 # 02_linux_basics.qmd
 ---
 title: "02 — Linux Basics"
@@ -7,24 +6,47 @@ execute:
   echo: true
 ---
 
-# Linux Shell Basics
+Introduction — This page shows a Python data-generation script and the Linux shell commands used to run the script and inspect the resulting CSV file. Explanations below only cover the Linux commands (the topic); the Python script is shown for context but is not explained in detail.
 
-This chapter demonstrates a few essential shell commands used in Linux/Unix environments.
+```{python}
+from pathlib import Path
+import pandas as pd
+import numpy as np
 
-## File and directory operations
+Path("data/raw").mkdir(parents=True, exist_ok=True)
+
+np.random.seed(42)
+n = 100
+df = pd.DataFrame({
+    "date": pd.date_range(start="2022-01-01", periods=n, freq="D"),
+    "price": (100 + np.cumsum(np.random.randn(n))).round(4),
+    "volume": np.random.randint(100, 1000, size=n)
+})
+
+out = Path("data/raw/synth_prices.csv")
+df.to_csv(out, index=False)
+print(f"Saved {out}")
+```
+
+No Linux commands appear in the Python block above; it generates `data/raw/synth_prices.csv` for the subsequent shell commands.
 
 ```{bash}
-# Print current directory
-pwd
+set -euo pipefail
+python3 scripts/make_synth_data.py
+```
 
-# List files with details
-ls -la
+`set -euo pipefail` is a common Bash safety idiom:
+- `-e`: exit immediately if any command returns a non-zero status.
+- `-u`: treat unset variables as an error and exit.
+- `-o pipefail`: cause a pipeline to fail if any command in the pipeline fails.
+Together they make shell scripts fail fast and avoid silent errors.
 
-# Create directories and files
-mkdir -p project/data
-echo "id,name" > project/data/sample.csv
-echo "1,Alice" >> project/data/sample.csv
-echo "2,Bob" >> project/data/sample.csv
+`python3 scripts/make_synth_data.py` runs the Python script `scripts/make_synth_data.py` with the `python3` interpreter found in the shell's `PATH`.
 
-# View file contents
-cat project/data/sample.csv
+```{bash}
+wc -l data/raw/synth_prices.csv
+head -n 5 data/raw/synth_prices.csv
+```
+
+- `wc -l <file>` prints the number of lines in the file. Useful to confirm row count quickly (including the header line if present).
+- `head -n 5 <file>` prints the first five lines of the file. Useful to preview the header and first rows to verify the file's structure and contents.

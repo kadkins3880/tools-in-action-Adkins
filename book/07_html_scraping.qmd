@@ -1,4 +1,3 @@
-```yaml
 # 07_html_scraping.qmd
 ---
 title: "07 — HTML Scraping (Respect robots.txt)"
@@ -7,33 +6,76 @@ execute:
   echo: true
 ---
 
-# Simple web scraping example with robots.txt check
-
-This example fetches a page only if allowed by the site's `robots.txt`. It uses `urllib.robotparser`, `requests`, and `bs4`. Always obey robots.txt and website terms.
+Introduction — This page demonstrates a minimal, well-behaved HTML scraping pattern that first checks `robots.txt`, caches the fetched HTML, uses a clear `User-Agent`, and parses the page with BeautifulSoup. Explanations below focus on respectful scraping practices, the `robotparser` check, request headers/timeouts, polite pauses, caching, and basic parsing to extract the page title and links.
 
 ```{python}
-import urllib.robotparser
+from pathlib import Path
+import time
 import requests
+from urllib import robotparser
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin, urlparse
 
-site = "https://example.com"
-robots_url = urljoin(site, "/robots.txt")
+URL = "https://example.com"
+RAW = Path("data/raw/page.html")
+Path("data/raw").mkdir(parents=True, exist_ok=True)
 
-rp = urllib.robotparser.RobotFileParser()
-rp.set_url(robots_url)
+rp = robotparser.RobotFileParser()
+rp.set_url("https://example.com/robots.txt")
 rp.read()
+user_agent = "STAT4160-student/1.0"
 
-user_agent = "*"
-path = "/"
+if not rp.can_fetch(user_agent, URL):
+    raise SystemExit("robots.txt disallows scraping this URL.")
 
-if rp.can_fetch(user_agent, urljoin(site, path)):
-    res = requests.get(site)
-    print("Status code:", res.status_code)
-    if res.status_code == 200:
-        soup = BeautifulSoup(res.text, "html.parser")
-        # Print the title tag text
-        title = soup.title.string if soup.title else "(no title)"
-        print("Page title:", title)
+if RAW.exists():
+    html = RAW.read_text(encoding="utf-8")
 else:
-    print(f"Scraping disallowed by robots.txt for {site}")
+    res = requests.get(URL, headers={"User-Agent": user_agent}, timeout=10)
+    res.raise_for_status()
+    html = res.text
+    RAW.write_text(html, encoding="utf-8")
+    time.sleep(1)
+
+soup = BeautifulSoup(html, "html.parser")
+title = soup.title.get_text(strip=True) if soup.title else "(no title)"
+print("Page title:", title)
+links = [(a.get_text(strip=True), a.get("href")) for a in soup.select("a[href]")]
+print("First 5 links:", links[:5])
+```
+
+Explanation for the above code:
+
+- `robotparser.RobotFileParser()` / `set_url(...)` / `read()`  
+  Create a robots.txt parser instance, point it at the site's `robots.txt`, and load/parses its rules. This produces the rule set used to decide whether a particular `User-Agent` may fetch a particular URL.
+
+- `user_agent = "STAT4160-student/1.0"` and `rp.can_fetch(user_agent, URL)`  
+  Supply a clear, descriptive `User-Agent` that identifies the client. `can_fetch` checks whether the named user-agent is allowed to access the given URL per the site's `robots.txt`. If `can_fetch` returns `False`, the script exits immediately — scraping is aborted to respect the website's policy.
+
+- Caching with `RAW.exists()` / `RAW.write_text(...)`  
+  If a local copy of the page already exists at `data/raw/page.html`, the script reads the cached HTML instead of re-downloading. Caching reduces load on remote servers during development and repeated runs. When no cache exists, the script performs a single `GET` and writes the body to the cache file.
+
+- `requests.get(..., headers={"User-Agent": user_agent}, timeout=10)` and `res.raise_for_status()`  
+  The `User-Agent` header is sent with the request so servers can identify the client. `timeout=10` avoids hanging indefinitely on slow servers. `raise_for_status()` raises an exception for 4xx/5xx responses so failures are explicit and can be handled (or cause the script to exit under `set -e`).
+
+- `time.sleep(1)` — polite pause  
+  After fetching and saving a page, the script sleeps briefly to avoid sending requests in rapid succession. Respectful scraping typically includes pauses between requests; the appropriate delay depends on the target site and any `Crawl-delay` directives (see note below).
+
+- `BeautifulSoup(html, "html.parser")`, `soup.title`, and `soup.select("a[href]")`  
+  Parse the HTML into a navigable DOM with BeautifulSoup. Extract the page title (if present) via `soup.title.get_text(...)`. Use `soup.select("a[href]")` to select anchor tags that have an `href` attribute and build a list of `(text, href)` tuples for simple link extraction.
+
+- Safety and robustness notes:
+  - Always obey `robots.txt` as an explicit first step. `robotparser` helps automate this check, but be aware that `robots.txt` is advisory — responsible scrapers must still follow it.
+  - Some `robots.txt` files include `Crawl-delay` directives; Python's `robotparser` may not support all non-standard fields. If a `Crawl-delay` is present, respect it by increasing sleep intervals accordingly.
+  - Use descriptive `User-Agent` values and provide contact information when appropriate (e.g., `"my-bot/1.0 (contact: email@example.com)"`) so site operators can reach you if needed.
+  - Honor rate limits, avoid aggressive parallel requests, and prefer cached reads during development to minimize load on target sites.
+  - Handle relative URLs carefully when following links: use `urllib.parse.urljoin(base, href)` to form absolute URLs if you will fetch linked pages.
+
+```{bash}
+set -euo pipefail
+python3 scripts/scrape_example.py
+```
+
+Explanation for the above code:
+
+- `set -euo pipefail` makes the shell session fail-fast so that errors in the Python script are visible and stop subsequent commands.
+- `python3 scripts/scrape_example.py` runs the scraper. Under the checks in the Python code, the script will stop immediately if `robots.txt` disallows scraping the target URL.

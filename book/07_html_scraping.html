@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -181,15 +216,8 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#yaml" id="toc-yaml" class="nav-link active" data-scroll-target="#yaml"><span class="header-section-number">8.1</span> ```yaml</a></li>
-  <li><a href="#simple-web-scraping-example-with-robots.txt-check" id="toc-simple-web-scraping-example-with-robots.txt-check" class="nav-link" data-scroll-target="#simple-web-scraping-example-with-robots.txt-check"><span class="header-section-number">9</span> Simple web scraping example with robots.txt check</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -213,21 +241,77 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="yaml" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="yaml"><span class="header-section-number">8.1</span> ```yaml</h2>
-<p>title: “07 — HTML Scraping (Respect robots.txt)” format: html execute: echo: true —</p>
-</section>
-<section id="simple-web-scraping-example-with-robots.txt-check" class="level1" data-number="9">
-<h1 data-number="9"><span class="header-section-number">9</span> Simple web scraping example with robots.txt check</h1>
-<p>This example fetches a page only if allowed by the site’s <code>robots.txt</code>. It uses <code>urllib.robotparser</code>, <code>requests</code>, and <code>bs4</code>. Always obey robots.txt and website terms.</p>
-<p>import urllib.robotparser import requests from bs4 import BeautifulSoup from urllib.parse import urljoin, urlparse</p>
-<p>site = “https://example.com” robots_url = urljoin(site, “/robots.txt”)</p>
-<p>rp = urllib.robotparser.RobotFileParser() rp.set_url(robots_url) rp.read()</p>
-<p>user_agent = “*” path = “/”</p>
-<p>if rp.can_fetch(user_agent, urljoin(site, path)): res = requests.get(site) print(“Status code:”, res.status_code) if res.status_code == 200: soup = BeautifulSoup(res.text, “html.parser”) # Print the title tag text title = soup.title.string if soup.title else “(no title)” print(“Page title:”, title) else: print(f”Scraping disallowed by robots.txt for {site}“)</p>
+<p>Introduction — This page demonstrates a minimal, well-behaved HTML scraping pattern that first checks <code>robots.txt</code>, caches the fetched HTML, uses a clear <code>User-Agent</code>, and parses the page with BeautifulSoup. Explanations below focus on respectful scraping practices, the <code>robotparser</code> check, request headers/timeouts, polite pauses, caching, and basic parsing to extract the page title and links.</p>
+<div id="36bccb1c" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> urllib <span class="im">import</span> robotparser</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bs4 <span class="im">import</span> BeautifulSoup</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>URL <span class="op">=</span> <span class="st">"https://example.com"</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>RAW <span class="op">=</span> Path(<span class="st">"data/raw/page.html"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"data/raw"</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>rp <span class="op">=</span> robotparser.RobotFileParser()</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>rp.set_url(<span class="st">"https://example.com/robots.txt"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>rp.read()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>user_agent <span class="op">=</span> <span class="st">"STAT4160-student/1.0"</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> rp.can_fetch(user_agent, URL):</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">SystemExit</span>(<span class="st">"robots.txt disallows scraping this URL."</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> RAW.exists():</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    html <span class="op">=</span> RAW.read_text(encoding<span class="op">=</span><span class="st">"utf-8"</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> requests.get(URL, headers<span class="op">=</span>{<span class="st">"User-Agent"</span>: user_agent}, timeout<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    res.raise_for_status()</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    html <span class="op">=</span> res.text</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    RAW.write_text(html, encoding<span class="op">=</span><span class="st">"utf-8"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    time.sleep(<span class="dv">1</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>soup <span class="op">=</span> BeautifulSoup(html, <span class="st">"html.parser"</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>title <span class="op">=</span> soup.title.get_text(strip<span class="op">=</span><span class="va">True</span>) <span class="cf">if</span> soup.title <span class="cf">else</span> <span class="st">"(no title)"</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Page title:"</span>, title)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>links <span class="op">=</span> [(a.get_text(strip<span class="op">=</span><span class="va">True</span>), a.get(<span class="st">"href"</span>)) <span class="cf">for</span> a <span class="kw">in</span> soup.select(<span class="st">"a[href]"</span>)]</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"First 5 links:"</span>, links[:<span class="dv">5</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Page title: Example Domain
+First 5 links: [('Learn more', 'https://iana.org/domains/example')]</code></pre>
+</div>
+</div>
+<p>Explanation for the above code:</p>
+<ul>
+<li><p><code>robotparser.RobotFileParser()</code> / <code>set_url(...)</code> / <code>read()</code><br>
+Create a robots.txt parser instance, point it at the site’s <code>robots.txt</code>, and load/parses its rules. This produces the rule set used to decide whether a particular <code>User-Agent</code> may fetch a particular URL.</p></li>
+<li><p><code>user_agent = "STAT4160-student/1.0"</code> and <code>rp.can_fetch(user_agent, URL)</code><br>
+Supply a clear, descriptive <code>User-Agent</code> that identifies the client. <code>can_fetch</code> checks whether the named user-agent is allowed to access the given URL per the site’s <code>robots.txt</code>. If <code>can_fetch</code> returns <code>False</code>, the script exits immediately — scraping is aborted to respect the website’s policy.</p></li>
+<li><p>Caching with <code>RAW.exists()</code> / <code>RAW.write_text(...)</code><br>
+If a local copy of the page already exists at <code>data/raw/page.html</code>, the script reads the cached HTML instead of re-downloading. Caching reduces load on remote servers during development and repeated runs. When no cache exists, the script performs a single <code>GET</code> and writes the body to the cache file.</p></li>
+<li><p><code>requests.get(..., headers={"User-Agent": user_agent}, timeout=10)</code> and <code>res.raise_for_status()</code><br>
+The <code>User-Agent</code> header is sent with the request so servers can identify the client. <code>timeout=10</code> avoids hanging indefinitely on slow servers. <code>raise_for_status()</code> raises an exception for 4xx/5xx responses so failures are explicit and can be handled (or cause the script to exit under <code>set -e</code>).</p></li>
+<li><p><code>time.sleep(1)</code> — polite pause<br>
+After fetching and saving a page, the script sleeps briefly to avoid sending requests in rapid succession. Respectful scraping typically includes pauses between requests; the appropriate delay depends on the target site and any <code>Crawl-delay</code> directives (see note below).</p></li>
+<li><p><code>BeautifulSoup(html, "html.parser")</code>, <code>soup.title</code>, and <code>soup.select("a[href]")</code><br>
+Parse the HTML into a navigable DOM with BeautifulSoup. Extract the page title (if present) via <code>soup.title.get_text(...)</code>. Use <code>soup.select("a[href]")</code> to select anchor tags that have an <code>href</code> attribute and build a list of <code>(text, href)</code> tuples for simple link extraction.</p></li>
+<li><p>Safety and robustness notes:</p>
+<ul>
+<li>Always obey <code>robots.txt</code> as an explicit first step. <code>robotparser</code> helps automate this check, but be aware that <code>robots.txt</code> is advisory — responsible scrapers must still follow it.</li>
+<li>Some <code>robots.txt</code> files include <code>Crawl-delay</code> directives; Python’s <code>robotparser</code> may not support all non-standard fields. If a <code>Crawl-delay</code> is present, respect it by increasing sleep intervals accordingly.</li>
+<li>Use descriptive <code>User-Agent</code> values and provide contact information when appropriate (e.g., <code>"my-bot/1.0 (contact: email@example.com)"</code>) so site operators can reach you if needed.</li>
+<li>Honor rate limits, avoid aggressive parallel requests, and prefer cached reads during development to minimize load on target sites.</li>
+<li>Handle relative URLs carefully when following links: use <code>urllib.parse.urljoin(base, href)</code> to form absolute URLs if you will fetch linked pages.</li>
+</ul></li>
+</ul>
+<pre class="{bash}"><code>set -euo pipefail
+python3 scripts/scrape_example.py</code></pre>
+<p>Explanation for the above code:</p>
+<ul>
+<li><code>set -euo pipefail</code> makes the shell session fail-fast so that errors in the Python script are visible and stop subsequent commands.</li>
+<li><code>python3 scripts/scrape_example.py</code> runs the scraper. Under the checks in the Python code, the script will stop immediately if <code>robots.txt</code> disallows scraping the target URL.</li>
+</ul>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

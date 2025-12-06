@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -181,18 +216,8 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#yaml" id="toc-yaml" class="nav-link active" data-scroll-target="#yaml"><span class="header-section-number">7.1</span> ```yaml</a></li>
-  <li><a href="#pandas-merges-and-saving-to-parquet" id="toc-pandas-merges-and-saving-to-parquet" class="nav-link" data-scroll-target="#pandas-merges-and-saving-to-parquet"><span class="header-section-number">8</span> pandas merges and saving to Parquet</a></li>
-  <li><a href="#create-two-small-dataframes" id="toc-create-two-small-dataframes" class="nav-link" data-scroll-target="#create-two-small-dataframes"><span class="header-section-number">9</span> Create two small DataFrames</a></li>
-  <li><a href="#merge-inner-join-on-user_id" id="toc-merge-inner-join-on-user_id" class="nav-link" data-scroll-target="#merge-inner-join-on-user_id"><span class="header-section-number">10</span> Merge (inner join on user_id)</a></li>
-  <li><a href="#save-to-parquet-requires-pyarrow-or-fastparquet" id="toc-save-to-parquet-requires-pyarrow-or-fastparquet" class="nav-link" data-scroll-target="#save-to-parquet-requires-pyarrow-or-fastparquet"><span class="header-section-number">11</span> Save to parquet (requires pyarrow or fastparquet)</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -216,31 +241,67 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="yaml" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="yaml"><span class="header-section-number">7.1</span> ```yaml</h2>
-<p>title: “06 — pandas Joins &amp; Parquet” format: html execute: echo: true —</p>
-</section>
-<section id="pandas-merges-and-saving-to-parquet" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> pandas merges and saving to Parquet</h1>
-<p>This chapter creates two small DataFrames, performs a join, and writes the result to Parquet.</p>
-<p>import pandas as pd from pathlib import Path</p>
-<p>Path(“data/processed”).mkdir(parents=True, exist_ok=True)</p>
-</section>
-<section id="create-two-small-dataframes" class="level1" data-number="9">
-<h1 data-number="9"><span class="header-section-number">9</span> Create two small DataFrames</h1>
-<p>df_users = pd.DataFrame({ “user_id”: [1, 2, 3], “name”: [“Alice”, “Bob”, “Charlie”] })</p>
-<p>df_scores = pd.DataFrame({ “user_id”: [1, 2, 3], “score”: [95, 88, 76] })</p>
-</section>
-<section id="merge-inner-join-on-user_id" class="level1" data-number="10">
-<h1 data-number="10"><span class="header-section-number">10</span> Merge (inner join on user_id)</h1>
-<p>df_merged = pd.merge(df_users, df_scores, on=“user_id”, how=“inner”) print(df_merged)</p>
-</section>
-<section id="save-to-parquet-requires-pyarrow-or-fastparquet" class="level1" data-number="11">
-<h1 data-number="11"><span class="header-section-number">11</span> Save to parquet (requires pyarrow or fastparquet)</h1>
-<p>parquet_path = Path(“data/processed/merged.parquet”) df_merged.to_parquet(parquet_path, index=False) print(f”Saved merged DataFrame to {parquet_path}“)</p>
+<p>Introduction — This page demonstrates using pandas to join a lookup (metadata) table into a processed DataFrame and writing the result to Parquet. Explanations focus on the pandas join/merge semantics, dtype adjustments for efficient storage, and writing Parquet files.</p>
+<div id="8300ba20" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"data/processed"</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/processed/synth_features.csv"</span>, parse_dates<span class="op">=</span>[<span class="st">"date"</span>])</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">"weekday"</span> <span class="kw">in</span> df.columns:</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"weekday"</span>] <span class="op">=</span> df[<span class="st">"weekday"</span>].astype(<span class="st">"int8"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>meta <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"weekday"</span>: [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>],</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"weekday_name"</span>: [<span class="st">"Mon"</span>,<span class="st">"Tue"</span>,<span class="st">"Wed"</span>,<span class="st">"Thu"</span>,<span class="st">"Fri"</span>,<span class="st">"Sat"</span>,<span class="st">"Sun"</span>]</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.merge(meta, on<span class="op">=</span><span class="st">"weekday"</span>, how<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">"price"</span> <span class="kw">in</span> df.columns:</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"price"</span>] <span class="op">=</span> df[<span class="st">"price"</span>].astype(<span class="st">"float32"</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">"volume"</span> <span class="kw">in</span> df.columns:</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">"volume"</span>] <span class="op">=</span> df[<span class="st">"volume"</span>].astype(<span class="st">"int32"</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>out <span class="op">=</span> <span class="st">"data/processed/synth.parquet"</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>df.to_parquet(out, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.head())</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Parquet file size (bytes):"</span>, os.path.getsize(out))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        date       price  volume  log_return      sma_5  weekday weekday_name
+0 2022-01-01  100.496696     748    0.000000  100.49670        6          Sat
+1 2022-01-02  100.358398     417   -0.001377  100.42755        7          Sun
+2 2022-01-03  101.006104     776    0.006433  100.62040        1          Mon
+3 2022-01-04  102.529198     324    0.014967  101.09760        2          Tue
+4 2022-01-05  102.294998     918   -0.002287  101.33708        3          Wed
+
+Parquet file size (bytes): 7994</code></pre>
+</div>
+</div>
+<p>The above code:</p>
+<ul>
+<li><p><code>pd.read_csv(..., parse_dates=["date"])</code><br>
+Reads the CSV into a DataFrame and converts the <code>date</code> column to <code>datetime64[ns]</code>. Parsed datetimes enable correct sorting, time-based operations, and compact storage in Parquet.</p></li>
+<li><p><code>df["weekday"] = df["weekday"].astype("int8")</code><br>
+Ensures the <code>weekday</code> column uses a small integer dtype before the join. Choosing a compact integer (<code>int8</code>) reduces memory use and results in smaller on-disk Parquet files.</p></li>
+<li><p><code>meta = pd.DataFrame({...})</code> and <code>df.merge(meta, on="weekday", how="left")</code><br>
+Creates a lookup table (<code>meta</code>) mapping weekday integers to names, then performs a <strong>left join</strong> of <code>df</code> with <code>meta</code> on the <code>weekday</code> column. A left join preserves all rows from the left table (<code>df</code>) and adds matching columns from <code>meta</code>; rows without a match receive <code>NaN</code> in the joined columns. Using <code>on="weekday"</code> explicitly names the join key; <code>how="left"</code> selects left-join semantics.</p></li>
+<li><p><code>df["price"] = df["price"].astype("float32")</code> and <code>df["volume"] = df["volume"].astype("int32")</code><br>
+Downcasts numeric columns to narrower dtypes to reduce memory and Parquet size. <code>float32</code> is typically sufficient for many price series and halves memory compared with <code>float64</code>. Choose dtypes that retain the required precision for downstream analysis.</p></li>
+<li><p><code>df.to_parquet(out, index=False)</code><br>
+Writes the DataFrame to a Parquet file. Parquet stores data column-wise and is efficient for both storage and columnar reads. <code>index=False</code> prevents pandas from writing the DataFrame index as a separate column, keeping the file tidy. Parquet writing depends on an available engine (commonly <code>pyarrow</code>); ensure an engine is installed in the environment when running this code.</p></li>
+<li><p><code>os.path.getsize(out)</code><br>
+Prints the Parquet file size in bytes as a quick round-trip check to confirm the file was written and to inspect storage impact after dtype optimizations.</p></li>
+</ul>
+<pre class="{bash}"><code>python3 - &lt;&lt;'PY'
+from pathlib import Path
+import pandas as pd
+Path("data/processed").mkdir(parents=True, exist_ok=True)
+print("Ensure data/processed/synth_features.csv exists, then run the Python snippet above in this page to create parquet.")
+PY</code></pre>
+<p>The inline shell/Python snippet above runs a short Python interpreter session (here-doc) that reminds the user to ensure the source CSV exists before running the main snippet. It does not perform joins or Parquet writes itself; it is a convenience check to avoid running the main snippet when the input file is missing.</p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

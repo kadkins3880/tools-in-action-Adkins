@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>11&nbsp; 10_quarto_book.qmd – Tools-in-Action</title>
+<title>3&nbsp; 02_linux_basics.qmd – Tools-in-Action</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -30,7 +65,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./09_pytorch_miniloop.html" rel="prev">
+<link href="./03_shell_essentials.html" rel="next">
+<link href="./01_git.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -82,7 +118,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./10_quarto_book.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">10 — Quarto Book &amp; Rendering</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./02_linux_basics.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">02 — Linux Basics</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -123,7 +159,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02_linux_basics.html" class="sidebar-item-text sidebar-link">
+  <a href="./02_linux_basics.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">02 — Linux Basics</span></span></a>
   </div>
 </li>
@@ -171,7 +207,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10_quarto_book.html" class="sidebar-item-text sidebar-link active">
+  <a href="./10_quarto_book.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">10 — Quarto Book &amp; Rendering</span></span></a>
   </div>
 </li>
@@ -180,25 +216,15 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#yaml" id="toc-yaml" class="nav-link active" data-scroll-target="#yaml"><span class="header-section-number">11.1</span> ```yaml</a></li>
-  <li><a href="#quarto-book-render-and-publish" id="toc-quarto-book-render-and-publish" class="nav-link" data-scroll-target="#quarto-book-render-and-publish"><span class="header-section-number">12</span> Quarto Book — Render and Publish</a>
-  <ul class="collapse">
-  <li><a href="#example-_quarto.yml-put-in-the-book-folder" id="toc-example-_quarto.yml-put-in-the-book-folder" class="nav-link" data-scroll-target="#example-_quarto.yml-put-in-the-book-folder"><span class="header-section-number">12.1</span> Example <code>_quarto.yml</code> (put in the <code>book/</code> folder)</a></li>
-  </ul></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">10_quarto_book.qmd</span></h1>
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">02_linux_basics.qmd</span></h1>
 </div>
 
 
@@ -215,22 +241,42 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="yaml" class="level2" data-number="11.1">
-<h2 data-number="11.1" class="anchored" data-anchor-id="yaml"><span class="header-section-number">11.1</span> ```yaml</h2>
-<p>title: “10 — Quarto Book &amp; Rendering” format: html execute: echo: true —</p>
-</section>
-<section id="quarto-book-render-and-publish" class="level1" data-number="12">
-<h1 data-number="12"><span class="header-section-number">12</span> Quarto Book — Render and Publish</h1>
-<p>This chapter shows the minimal <code>_quarto.yml</code> and the commands to render and publish the book.</p>
-<section id="example-_quarto.yml-put-in-the-book-folder" class="level2" data-number="12.1">
-<h2 data-number="12.1" class="anchored" data-anchor-id="example-_quarto.yml-put-in-the-book-folder"><span class="header-section-number">12.1</span> Example <code>_quarto.yml</code> (put in the <code>book/</code> folder)</h2>
-<p>```yaml project: type: book</p>
-<p>book: title: “Tools in Action — Demo” author: “Your Name” chapters: - index.qmd - 01_git.qmd - 02_linux_basics.qmd - 03_shell_essentials.qmd - 04_makefile.qmd - 05_sql_sqlite.qmd - 06_pandas_joins_parquet.qmd - 07_html_scraping.qmd - 08_pytest.qmd - 09_pytorch_miniloop.qmd - 10_quarto_book.qmd</p>
-<p>format: html: theme: default</p>
+<p>Introduction — This page shows a Python data-generation script and the Linux shell commands used to run the script and inspect the resulting CSV file. Explanations below only cover the Linux commands (the topic); the Python script is shown for context but is not explained in detail.</p>
+<div id="d820ee99" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"data/raw"</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"date"</span>: pd.date_range(start<span class="op">=</span><span class="st">"2022-01-01"</span>, periods<span class="op">=</span>n, freq<span class="op">=</span><span class="st">"D"</span>),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"price"</span>: (<span class="dv">100</span> <span class="op">+</span> np.cumsum(np.random.randn(n))).<span class="bu">round</span>(<span class="dv">4</span>),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"volume"</span>: np.random.randint(<span class="dv">100</span>, <span class="dv">1000</span>, size<span class="op">=</span>n)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>out <span class="op">=</span> Path(<span class="st">"data/raw/synth_prices.csv"</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>df.to_csv(out, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Saved </span><span class="sc">{</span>out<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Saved data\raw\synth_prices.csv</code></pre>
+</div>
+</div>
+<p>No Linux commands appear in the Python block above; it generates <code>data/raw/synth_prices.csv</code> for the subsequent shell commands.</p>
+<pre class="{bash}"><code>set -euo pipefail
+python3 scripts/make_synth_data.py</code></pre>
+<p><code>set -euo pipefail</code> is a common Bash safety idiom: - <code>-e</code>: exit immediately if any command returns a non-zero status. - <code>-u</code>: treat unset variables as an error and exit. - <code>-o pipefail</code>: cause a pipeline to fail if any command in the pipeline fails. Together they make shell scripts fail fast and avoid silent errors.</p>
+<p><code>python3 scripts/make_synth_data.py</code> runs the Python script <code>scripts/make_synth_data.py</code> with the <code>python3</code> interpreter found in the shell’s <code>PATH</code>.</p>
+<pre class="{bash}"><code>wc -l data/raw/synth_prices.csv
+head -n 5 data/raw/synth_prices.csv</code></pre>
+<ul>
+<li><code>wc -l &lt;file&gt;</code> prints the number of lines in the file. Useful to confirm row count quickly (including the header line if present).</li>
+<li><code>head -n 5 &lt;file&gt;</code> prints the first five lines of the file. Useful to preview the header and first rows to verify the file’s structure and contents.</li>
+</ul>
 
 
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -635,11 +681,14 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./09_pytorch_miniloop.html" class="pagination-link" aria-label="09 — PyTorch Minimal Training Loop">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">09 — PyTorch Minimal Training Loop</span></span>
+      <a href="./01_git.html" class="pagination-link" aria-label="01 — Git &amp; GitHub">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">01 — Git &amp; GitHub</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./03_shell_essentials.html" class="pagination-link" aria-label="03 — Shell Essentials">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">03 — Shell Essentials</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

@@ -1,5 +1,3 @@
-
-```yaml
 # 10_quarto_book.qmd
 ---
 title: "10 — Quarto Book & Rendering"
@@ -8,11 +6,35 @@ execute:
   echo: true
 ---
 
-# Quarto Book — Render and Publish
+Introduction — Commands for rendering a Quarto project located in `book/`. Examples show rendering the entire site, a single page for fast iteration, previewing the site locally, and publishing to GitHub Pages using Quarto's helper command. Explanations describe what each command does and practical notes for common workflows.
 
-This chapter shows the minimal `_quarto.yml` and the commands to render and publish the book.
+```{bash}
+quarto render book
+```
 
-## Example `_quarto.yml` (put in the `book/` folder)
+Renders the entire Quarto project found in the `book/` directory and writes the output into the project's output folder (commonly `book/_site` or `book/_freeze` depending on project settings). Use this when you want a full, reproducible build of the site for publishing or final review.
+
+```{bash}
+quarto render book/05_sql_sqlite.qmd
+```
+
+Renders a single page (`book/05_sql_sqlite.qmd`) rather than the whole site. This is useful for fast iteration during authoring because it rebuilds only the specified document and its immediate dependencies, reducing turnaround time compared with rendering the entire book.
+
+```{bash}
+quarto preview book
+```
+
+Starts a local preview server for the Quarto project in `book/`. The preview server serves the rendered site on a local HTTP address (for example `http://127.0.0.1:4200`) and typically supports live reload so changes to source files are shown automatically. Use this for manual checks and interactive review before publishing.
+
+```{bash}
+quarto publish gh-pages --project=book
+```
+
+Publishes the Quarto site to GitHub Pages using Quarto's built-in helper. This command packages the `book/` project and pushes it to the `gh-pages` branch (or config-specified branch) on the repository's remote. Requirements and notes:
+- A Git remote must be configured and accessible from your environment (e.g., `origin` set to `git@github.com:your-username/your-repo.git` or HTTPS).
+- The invoking account must have permission to push to the target branch on the remote.
+- Quarto's publish helper automates common steps but you may prefer manual deployment if you need custom deployment steps or CI-based publishing.
+- For CI environments, consider running `quarto render book` in a pipeline and pushing the generated output to the appropriate branch with secure credentials rather than using `quarto publish` interactively.
 
 ```yaml
 project:

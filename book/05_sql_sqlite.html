@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -181,18 +216,8 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#yaml" id="toc-yaml" class="nav-link active" data-scroll-target="#yaml"><span class="header-section-number">6.1</span> ```yaml</a></li>
-  <li><a href="#sqlite-from-python-create-insert-query" id="toc-sqlite-from-python-create-insert-query" class="nav-link" data-scroll-target="#sqlite-from-python-create-insert-query"><span class="header-section-number">7</span> SQLite from Python — Create, Insert, Query</a></li>
-  <li><a href="#connect-and-create-table" id="toc-connect-and-create-table" class="nav-link" data-scroll-target="#connect-and-create-table"><span class="header-section-number">8</span> Connect and create table</a></li>
-  <li><a href="#insert-sample-rows-use-parameterized-queries" id="toc-insert-sample-rows-use-parameterized-queries" class="nav-link" data-scroll-target="#insert-sample-rows-use-parameterized-queries"><span class="header-section-number">9</span> Insert sample rows (use parameterized queries)</a></li>
-  <li><a href="#query-select-all-and-where-age-30" id="toc-query-select-all-and-where-age-30" class="nav-link" data-scroll-target="#query-select-all-and-where-age-30"><span class="header-section-number">10</span> Query: select all and where age &gt; 30</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -216,32 +241,76 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="yaml" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="yaml"><span class="header-section-number">6.1</span> ```yaml</h2>
-<p>title: “05 — SQL &amp; SQLite (Python)” format: html execute: echo: true —</p>
-</section>
-<section id="sqlite-from-python-create-insert-query" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> SQLite from Python — Create, Insert, Query</h1>
-<p>This example demonstrates creating a SQLite database, inserting rows, and querying with SQL using Python’s <code>sqlite3</code>.</p>
-<p>import sqlite3 from pathlib import Path</p>
-<p>db_path = Path(“db/example.db”) db_path.parent.mkdir(parents=True, exist_ok=True)</p>
-</section>
-<section id="connect-and-create-table" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> Connect and create table</h1>
-<p>conn = sqlite3.connect(str(db_path)) cur = conn.cursor() cur.execute(““” CREATE TABLE IF NOT EXISTS people ( id INTEGER PRIMARY KEY, name TEXT NOT NULL, age INTEGER ) “““) conn.commit()</p>
-</section>
-<section id="insert-sample-rows-use-parameterized-queries" class="level1" data-number="9">
-<h1 data-number="9"><span class="header-section-number">9</span> Insert sample rows (use parameterized queries)</h1>
-<p>people = [(1, “Alice”, 30), (2, “Bob”, 25), (3, “Charlie”, 35)] cur.executemany(“INSERT OR REPLACE INTO people (id, name, age) VALUES (?, ?, ?)”, people) conn.commit()</p>
-</section>
-<section id="query-select-all-and-where-age-30" class="level1" data-number="10">
-<h1 data-number="10"><span class="header-section-number">10</span> Query: select all and where age &gt; 30</h1>
-<p>print(“All rows:”) for row in cur.execute(“SELECT * FROM people”): print(row)</p>
-<p>print(“older than 30:”) for row in cur.execute(“SELECT id, name, age FROM people WHERE age &gt; 30”): print(row)</p>
-<p>conn.close()</p>
+<p>Introduction — This page shows a small Python script that creates a local SQLite database, writes two tables from pandas DataFrames (<code>features</code> and <code>weekday_meta</code>), runs a JOIN query using SQL, and prints the result. The follow-up shell commands show how to run the script. Explanations below focus on the SQLite usage from the Python code and the example SQL query.</p>
+<div id="dc041e2e" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"db"</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> sqlite3.<span class="ex">connect</span>(<span class="st">"db/synth.db"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(<span class="st">"data/processed/synth_features.csv"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">"weekday"</span> <span class="kw">in</span> df.columns:</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        df[<span class="st">"weekday"</span>] <span class="op">=</span> df[<span class="st">"weekday"</span>].astype(<span class="bu">int</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    df.to_sql(<span class="st">"features"</span>, con, if_exists<span class="op">=</span><span class="st">"replace"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    meta <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"weekday"</span>: [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>],</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"weekday_name"</span>: [<span class="st">"Mon"</span>,<span class="st">"Tue"</span>,<span class="st">"Wed"</span>,<span class="st">"Thu"</span>,<span class="st">"Fri"</span>,<span class="st">"Sat"</span>,<span class="st">"Sun"</span>]</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    meta.to_sql(<span class="st">"weekday_meta"</span>, con, if_exists<span class="op">=</span><span class="st">"replace"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT f.date, f.price, f.volume, f.log_return, f.sma_5, m.weekday_name</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM features f JOIN weekday_meta m USING(weekday)</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="st">    ORDER BY date LIMIT 10;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(pd.read_sql(q, con))</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    con.close()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         date     price  volume  log_return      sma_5 weekday_name
+0  2022-01-01  100.4967     748    0.000000  100.49670          Sat
+1  2022-01-02  100.3584     417   -0.001377  100.42755          Sun
+2  2022-01-03  101.0061     776    0.006433  100.62040          Mon
+3  2022-01-04  102.5292     324    0.014967  101.09760          Tue
+4  2022-01-05  102.2950     918   -0.002287  101.33708          Wed
+5  2022-01-06  102.0609     333   -0.002291  101.64992          Thu
+6  2022-01-07  103.6401     783    0.015355  102.30626          Fri
+7  2022-01-08  104.4075     763    0.007377  102.98654          Sat
+8  2022-01-09  103.9381     926   -0.004506  103.26832          Sun
+9  2022-01-10  104.4806     473    0.005206  103.70544          Mon</code></pre>
+</div>
+</div>
+<p>The Python code and SQLite explanations:</p>
+<ul>
+<li><p><code>sqlite3.connect("db/synth.db")</code><br>
+Opens (or creates) a local SQLite database file at <code>db/synth.db</code>. The returned connection <code>con</code> is used for all subsequent SQL operations.</p></li>
+<li><p><code>df = pd.read_csv("data/processed/synth_features.csv")</code> and <code>df.to_sql("features", con, if_exists="replace", index=False)</code><br>
+Loads the processed CSV into a pandas DataFrame and writes it to the SQLite database as a table named <code>features</code>. <code>if_exists="replace"</code> overwrites any existing table with the same name; <code>index=False</code> prevents pandas from adding the DataFrame index as a separate column.</p></li>
+<li><p><code>df["weekday"] = df["weekday"].astype(int)</code><br>
+Ensures the <code>weekday</code> column uses an integer type compatible with SQL joins and the <code>weekday_meta</code> table.</p></li>
+<li><p>Creating the <code>weekday_meta</code> DataFrame and writing it to SQL (<code>weekday_meta</code>)<br>
+This small lookup table provides a human-readable <code>weekday_name</code> for join demonstrations. Storing reference/metadata tables in the same database is a common pattern for self-contained examples.</p></li>
+<li><p>The SQL query string <code>q</code><br>
+The query selects date, price, volume, log return, 5-day simple moving average (<code>sma_5</code>), and the weekday name by joining <code>features</code> (<code>f</code>) with <code>weekday_meta</code> (<code>m</code>) using the <code>weekday</code> column. <code>USING(weekday)</code> is a concise SQL shorthand that matches the column in both tables; it is equivalent to <code>ON f.weekday = m.weekday</code>. <code>ORDER BY date LIMIT 10</code> sorts results by date and returns only the first ten rows — useful for quick previews.</p></li>
+<li><p><code>pd.read_sql(q, con)</code> and <code>print(...)</code><br>
+Executes the SQL query against the SQLite connection and returns the result as a pandas DataFrame, which is then printed to stdout. Using <code>pandas.read_sql</code> is convenient for moving data between SQL and pandas for analysis or display.</p></li>
+<li><p><code>finally: con.close()</code><br>
+Ensures the SQLite connection is closed regardless of success or failure, releasing file handles and flushing changes.</p></li>
+</ul>
+<pre class="{bash}"><code>set -euo pipefail
+python3 scripts/make_sqlite.py</code></pre>
+<p>Shell-run explanations:</p>
+<ul>
+<li><p><code>set -euo pipefail</code><br>
+A shell safety idiom that makes scripts fail-fast: <code>-e</code> exits on any non-zero command status, <code>-u</code> treats unset variables as errors, and <code>-o pipefail</code> causes a pipeline to fail if any component fails. While not SQLite-specific, it helps ensure the Python script’s failures are propagated to the shell.</p></li>
+<li><p><code>python3 scripts/make_sqlite.py</code><br>
+Runs the Python script that creates/populates <code>db/synth.db</code> and executes the example SQL query. After running, check <code>db/synth.db</code> with SQLite tools (for example <code>sqlite3 db/synth.db</code> or GUI clients) to inspect the <code>features</code> and <code>weekday_meta</code> tables and to run ad-hoc queries.</p></li>
+</ul>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

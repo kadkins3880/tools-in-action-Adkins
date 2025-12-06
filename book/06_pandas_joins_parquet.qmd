@@ -1,4 +1,3 @@
-```yaml
 # 06_pandas_joins_parquet.qmd
 ---
 title: "06 — pandas Joins & Parquet"
@@ -7,32 +6,62 @@ execute:
   echo: true
 ---
 
-# pandas merges and saving to Parquet
-
-This chapter creates two small DataFrames, performs a join, and writes the result to Parquet.
+Introduction — This page demonstrates using pandas to join a lookup (metadata) table into a processed DataFrame and writing the result to Parquet. Explanations focus on the pandas join/merge semantics, dtype adjustments for efficient storage, and writing Parquet files.
 
 ```{python}
-import pandas as pd
 from pathlib import Path
+import pandas as pd
 
 Path("data/processed").mkdir(parents=True, exist_ok=True)
+df = pd.read_csv("data/processed/synth_features.csv", parse_dates=["date"])
+if "weekday" in df.columns:
+    df["weekday"] = df["weekday"].astype("int8")
 
-# Create two small DataFrames
-df_users = pd.DataFrame({
-    "user_id": [1, 2, 3],
-    "name": ["Alice", "Bob", "Charlie"]
+meta = pd.DataFrame({
+    "weekday": [1,2,3,4,5,6,7],
+    "weekday_name": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
 })
+df = df.merge(meta, on="weekday", how="left")
 
-df_scores = pd.DataFrame({
-    "user_id": [1, 2, 3],
-    "score": [95, 88, 76]
-})
+if "price" in df.columns:
+    df["price"] = df["price"].astype("float32")
+if "volume" in df.columns:
+    df["volume"] = df["volume"].astype("int32")
 
-# Merge (inner join on user_id)
-df_merged = pd.merge(df_users, df_scores, on="user_id", how="inner")
-print(df_merged)
+out = "data/processed/synth.parquet"
+df.to_parquet(out, index=False)
+print(df.head())
+import os
+print("\nParquet file size (bytes):", os.path.getsize(out))
+```
 
-# Save to parquet (requires pyarrow or fastparquet)
-parquet_path = Path("data/processed/merged.parquet")
-df_merged.to_parquet(parquet_path, index=False)
-print(f"Saved merged DataFrame to {parquet_path}")
+The above code:
+
+- `pd.read_csv(..., parse_dates=["date"])`  
+  Reads the CSV into a DataFrame and converts the `date` column to `datetime64[ns]`. Parsed datetimes enable correct sorting, time-based operations, and compact storage in Parquet.
+
+- `df["weekday"] = df["weekday"].astype("int8")`  
+  Ensures the `weekday` column uses a small integer dtype before the join. Choosing a compact integer (`int8`) reduces memory use and results in smaller on-disk Parquet files.
+
+- `meta = pd.DataFrame({...})` and `df.merge(meta, on="weekday", how="left")`  
+  Creates a lookup table (`meta`) mapping weekday integers to names, then performs a **left join** of `df` with `meta` on the `weekday` column. A left join preserves all rows from the left table (`df`) and adds matching columns from `meta`; rows without a match receive `NaN` in the joined columns. Using `on="weekday"` explicitly names the join key; `how="left"` selects left-join semantics.
+
+- `df["price"] = df["price"].astype("float32")` and `df["volume"] = df["volume"].astype("int32")`  
+  Downcasts numeric columns to narrower dtypes to reduce memory and Parquet size. `float32` is typically sufficient for many price series and halves memory compared with `float64`. Choose dtypes that retain the required precision for downstream analysis.
+
+- `df.to_parquet(out, index=False)`  
+  Writes the DataFrame to a Parquet file. Parquet stores data column-wise and is efficient for both storage and columnar reads. `index=False` prevents pandas from writing the DataFrame index as a separate column, keeping the file tidy. Parquet writing depends on an available engine (commonly `pyarrow`); ensure an engine is installed in the environment when running this code.
+
+- `os.path.getsize(out)`  
+  Prints the Parquet file size in bytes as a quick round-trip check to confirm the file was written and to inspect storage impact after dtype optimizations.
+
+```{bash}
+python3 - <<'PY'
+from pathlib import Path
+import pandas as pd
+Path("data/processed").mkdir(parents=True, exist_ok=True)
+print("Ensure data/processed/synth_features.csv exists, then run the Python snippet above in this page to create parquet.")
+PY
+```
+
+The inline shell/Python snippet above runs a short Python interpreter session (here-doc) that reminds the user to ensure the source CSV exists before running the main snippet. It does not perform joins or Parquet writes itself; it is a convenience check to avoid running the main snippet when the input file is missing.
