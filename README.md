@@ -1,6 +1,8 @@
 # tools-in-action-Adkins
-
 Quarto book + Python pipeline for STAT 4160 final project.
+
+## Rendered Site:
+https://kadkins3880.github.io/tools-in-action-Adkins/10_quarto_book.html
 
 ## Prerequisites
 1. Python 3.10+ installed and on PATH.
