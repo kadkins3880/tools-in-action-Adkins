@@ -9,6 +9,7 @@ execute:
 Introduction — Minimal example showing how to implement a small supervised training loop in PyTorch. The snippet covers dataset creation, a tiny GRU-based model, device selection (CPU/GPU), optimizer and loss setup, and the standard training loop (forward, backward, gradient clipping, step). Explanations below describe the PyTorch-specific components and the role each plays in training.
 
 ```{python}
+#| eval: false
 # Minimal PyTorch example (runs on CPU if CUDA unavailable)
 import torch
 import torch.nn as nn

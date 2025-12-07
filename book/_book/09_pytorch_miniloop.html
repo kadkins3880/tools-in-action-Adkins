@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>6&nbsp; 05_sql_sqlite.qmd – Tools-in-Action</title>
+<title>10&nbsp; 09_pytorch_miniloop.qmd – Tools-in-Action</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./06_pandas_joins_parquet.html" rel="next">
-<link href="./04_makefile.html" rel="prev">
+<link href="./10_quarto_book.html" rel="next">
+<link href="./08_pytest.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -118,7 +118,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./05_sql_sqlite.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">05 — SQL &amp; SQLite (Python)</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./09_pytorch_miniloop.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">09 — PyTorch Minimal Training Loop</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -177,7 +177,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05_sql_sqlite.html" class="sidebar-item-text sidebar-link active">
+  <a href="./05_sql_sqlite.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">05 — SQL &amp; SQLite (Python)</span></span></a>
   </div>
 </li>
@@ -201,7 +201,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09_pytorch_miniloop.html" class="sidebar-item-text sidebar-link">
+  <a href="./09_pytorch_miniloop.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">09 — PyTorch Minimal Training Loop</span></span></a>
   </div>
 </li>
@@ -224,7 +224,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">05_sql_sqlite.qmd</span></h1>
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">09_pytorch_miniloop.qmd</span></h1>
 </div>
 
 
@@ -241,73 +241,85 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Introduction — This page shows a small Python script that creates a local SQLite database, writes two tables from pandas DataFrames (<code>features</code> and <code>weekday_meta</code>), runs a JOIN query using SQL, and prints the result. The follow-up shell commands show how to run the script. Explanations below focus on the SQLite usage from the Python code and the example SQL query.</p>
-<div id="dc041e2e" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlite3</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Path(<span class="st">"db"</span>).mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> sqlite3.<span class="ex">connect</span>(<span class="st">"db/synth.db"</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(<span class="st">"data/processed/synth_features.csv"</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">"weekday"</span> <span class="kw">in</span> df.columns:</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        df[<span class="st">"weekday"</span>] <span class="op">=</span> df[<span class="st">"weekday"</span>].astype(<span class="bu">int</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    df.to_sql(<span class="st">"features"</span>, con, if_exists<span class="op">=</span><span class="st">"replace"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    meta <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"weekday"</span>: [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>],</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"weekday_name"</span>: [<span class="st">"Mon"</span>,<span class="st">"Tue"</span>,<span class="st">"Wed"</span>,<span class="st">"Thu"</span>,<span class="st">"Fri"</span>,<span class="st">"Sat"</span>,<span class="st">"Sun"</span>]</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    meta.to_sql(<span class="st">"weekday_meta"</span>, con, if_exists<span class="op">=</span><span class="st">"replace"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> <span class="st">"""</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT f.date, f.price, f.volume, f.log_return, f.sma_5, m.weekday_name</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM features f JOIN weekday_meta m USING(weekday)</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="st">    ORDER BY date LIMIT 10;</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(pd.read_sql(q, con))</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="cf">finally</span>:</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    con.close()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>         date     price  volume  log_return      sma_5 weekday_name
-0  2022-01-01  100.4967     748    0.000000  100.49670          Sat
-1  2022-01-02  100.3584     417   -0.001377  100.42755          Sun
-2  2022-01-03  101.0061     776    0.006433  100.62040          Mon
-3  2022-01-04  102.5292     324    0.014967  101.09760          Tue
-4  2022-01-05  102.2950     918   -0.002287  101.33708          Wed
-5  2022-01-06  102.0609     333   -0.002291  101.64992          Thu
-6  2022-01-07  103.6401     783    0.015355  102.30626          Fri
-7  2022-01-08  104.4075     763    0.007377  102.98654          Sat
-8  2022-01-09  103.9381     926   -0.004506  103.26832          Sun
-9  2022-01-10  104.4806     473    0.005206  103.70544          Mon</code></pre>
+<p>Introduction — Minimal example showing how to implement a small supervised training loop in PyTorch. The snippet covers dataset creation, a tiny GRU-based model, device selection (CPU/GPU), optimizer and loss setup, and the standard training loop (forward, backward, gradient clipping, step). Explanations below describe the PyTorch-specific components and the role each plays in training.</p>
+<div id="aadaf23f" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Minimal PyTorch example (runs on CPU if CUDA unavailable)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>torch.manual_seed(<span class="dv">0</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">0</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>T, F, N <span class="op">=</span> <span class="dv">16</span>, <span class="dv">3</span>, <span class="dv">512</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="fl">0.5</span>, size<span class="op">=</span>(N, T, F)).astype(<span class="st">"float32"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="fl">0.2</span>, size<span class="op">=</span>(F,)).astype(<span class="st">"float32"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> (X[:, <span class="op">-</span><span class="dv">1</span>, :] <span class="op">@</span> w <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="fl">0.1</span>, size<span class="op">=</span>(N,))).astype(<span class="st">"float32"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> torch.utils.data.TensorDataset(torch.from_numpy(X), torch.from_numpy(y))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>dl <span class="op">=</span> torch.utils.data.DataLoader(ds, batch_size<span class="op">=</span><span class="dv">64</span>, shuffle<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SmallGRU(nn.Module):</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, F, H<span class="op">=</span><span class="dv">32</span>):</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.gru <span class="op">=</span> nn.GRU(F, H, batch_first<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.head <span class="op">=</span> nn.Linear(H, <span class="dv">1</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        _, h <span class="op">=</span> <span class="va">self</span>.gru(x)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.head(h[<span class="op">-</span><span class="dv">1</span>]).squeeze(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> torch.device(<span class="st">"cuda"</span> <span class="cf">if</span> torch.cuda.is_available() <span class="cf">else</span> <span class="st">"cpu"</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>net <span class="op">=</span> SmallGRU(F).to(device)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>opt <span class="op">=</span> torch.optim.AdamW(net.parameters(), lr<span class="op">=</span><span class="fl">3e-3</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>loss_fn <span class="op">=</span> nn.L1Loss()</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ep <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">11</span>):</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    net.train()</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    tot <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> xb, yb <span class="kw">in</span> dl:</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        xb, yb <span class="op">=</span> xb.to(device), yb.to(device)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        opt.zero_grad(set_to_none<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        yhat <span class="op">=</span> net(xb)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> loss_fn(yhat, yb)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        nn.utils.clip_grad_norm_(net.parameters(), <span class="fl">1.0</span>)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        opt.step()</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>        tot <span class="op">+=</span> loss.item() <span class="op">*</span> xb.size(<span class="dv">0</span>)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"epoch </span><span class="sc">{</span>ep<span class="sc">:02d}</span><span class="ss"> | train_mae=</span><span class="sc">{</span>tot<span class="op">/</span><span class="bu">len</span>(ds)<span class="sc">:.6f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</div>
-<p>The Python code and SQLite explanations:</p>
+<p>Explanation for the above code:</p>
 <ul>
-<li><p><code>sqlite3.connect("db/synth.db")</code><br>
-Opens (or creates) a local SQLite database file at <code>db/synth.db</code>. The returned connection <code>con</code> is used for all subsequent SQL operations.</p></li>
-<li><p><code>df = pd.read_csv("data/processed/synth_features.csv")</code> and <code>df.to_sql("features", con, if_exists="replace", index=False)</code><br>
-Loads the processed CSV into a pandas DataFrame and writes it to the SQLite database as a table named <code>features</code>. <code>if_exists="replace"</code> overwrites any existing table with the same name; <code>index=False</code> prevents pandas from adding the DataFrame index as a separate column.</p></li>
-<li><p><code>df["weekday"] = df["weekday"].astype(int)</code><br>
-Ensures the <code>weekday</code> column uses an integer type compatible with SQL joins and the <code>weekday_meta</code> table.</p></li>
-<li><p>Creating the <code>weekday_meta</code> DataFrame and writing it to SQL (<code>weekday_meta</code>)<br>
-This small lookup table provides a human-readable <code>weekday_name</code> for join demonstrations. Storing reference/metadata tables in the same database is a common pattern for self-contained examples.</p></li>
-<li><p>The SQL query string <code>q</code><br>
-The query selects date, price, volume, log return, 5-day simple moving average (<code>sma_5</code>), and the weekday name by joining <code>features</code> (<code>f</code>) with <code>weekday_meta</code> (<code>m</code>) using the <code>weekday</code> column. <code>USING(weekday)</code> is a concise SQL shorthand that matches the column in both tables; it is equivalent to <code>ON f.weekday = m.weekday</code>. <code>ORDER BY date LIMIT 10</code> sorts results by date and returns only the first ten rows — useful for quick previews.</p></li>
-<li><p><code>pd.read_sql(q, con)</code> and <code>print(...)</code><br>
-Executes the SQL query against the SQLite connection and returns the result as a pandas DataFrame, which is then printed to stdout. Using <code>pandas.read_sql</code> is convenient for moving data between SQL and pandas for analysis or display.</p></li>
-<li><p><code>finally: con.close()</code><br>
-Ensures the SQLite connection is closed regardless of success or failure, releasing file handles and flushing changes.</p></li>
-</ul>
-<pre class="{bash}"><code>set -euo pipefail
-python3 scripts/make_sqlite.py</code></pre>
-<p>Shell-run explanations:</p>
+<li><p><code>torch.manual_seed(0)</code> and <code>np.random.seed(0)</code><br>
+Set deterministic seeds for PyTorch and NumPy random generators to make the example reproducible during development and demos. Full determinism across platforms requires additional PyTorch flags and may still vary by backend.</p></li>
+<li><p>Data creation and <code>TensorDataset</code> / <code>DataLoader</code><br>
+The example synthesizes features <code>X</code> and targets <code>y</code> with NumPy, converts them to PyTorch tensors, and wraps them in a <code>TensorDataset</code>. <code>DataLoader</code> provides minibatch iteration (<code>batch_size=64</code>) and shuffling (<code>shuffle=True</code>), which is essential for stochastic optimization.</p></li>
+<li><p><code>class SmallGRU(nn.Module):</code><br>
+Defines a compact model with a single GRU layer and a linear head. <code>nn.GRU(F, H, batch_first=True)</code> processes sequences with <code>F</code> features per time step and returns a hidden state of size <code>H</code>. The model’s <code>forward</code> returns a single scalar per sample by taking the final hidden state (<code>h[-1]</code>) and applying <code>self.head</code>.</p></li>
+<li><p><code>device = torch.device("cuda" if torch.cuda.is_available() else "cpu")</code> and <code>.to(device)</code><br>
+Selects GPU if available; otherwise uses CPU. Moving the model and tensors to the same device is required for computation. This pattern makes the script portable across machines with and without CUDA.</p></li>
+<li><p><code>opt = torch.optim.AdamW(net.parameters(), lr=3e-3)</code><br>
+Uses the AdamW optimizer (Adam with decoupled weight decay) for parameter updates. AdamW is a sensible default for many models; learning rate and optimizer choice depend on the task.</p></li>
+<li><p><code>loss_fn = nn.L1Loss()</code><br>
+L1 loss computes mean absolute error (MAE) between predictions and targets. It is robust to outliers compared to squared losses and is a common choice for regression tasks where MAE is a meaningful metric.</p></li>
+<li><p>Training loop structure:</p>
 <ul>
-<li><p><code>set -euo pipefail</code><br>
-A shell safety idiom that makes scripts fail-fast: <code>-e</code> exits on any non-zero command status, <code>-u</code> treats unset variables as errors, and <code>-o pipefail</code> causes a pipeline to fail if any component fails. While not SQLite-specific, it helps ensure the Python script’s failures are propagated to the shell.</p></li>
-<li><p><code>python3 scripts/make_sqlite.py</code><br>
-Runs the Python script that creates/populates <code>db/synth.db</code> and executes the example SQL query. After running, check <code>db/synth.db</code> with SQLite tools (for example <code>sqlite3 db/synth.db</code> or GUI clients) to inspect the <code>features</code> and <code>weekday_meta</code> tables and to run ad-hoc queries.</p></li>
+<li><code>net.train()</code> sets the module to training mode (affects layers like dropout or batch norm).</li>
+<li>For each batch: move inputs/targets to <code>device</code> with <code>.to(device)</code>.</li>
+<li><code>opt.zero_grad(set_to_none=True)</code> clears gradients; <code>set_to_none=True</code> can be marginally faster and uses slightly less memory.</li>
+<li><code>yhat = net(xb)</code> performs the forward pass.</li>
+<li><code>loss = loss_fn(yhat, yb)</code> computes the batch loss.</li>
+<li><code>loss.backward()</code> computes gradients via backpropagation.</li>
+<li><code>nn.utils.clip_grad_norm_(net.parameters(), 1.0)</code> applies gradient clipping by global norm to avoid exploding gradients and stabilize training.</li>
+<li><code>opt.step()</code> updates parameters using computed gradients.</li>
+<li><code>tot += loss.item() * xb.size(0)</code> accumulates the sum of per-example losses to compute epoch MAE.</li>
+</ul></li>
+<li><p>Epoch reporting: <code>tot/len(ds)</code><br>
+After iterating batches, dividing the accumulated (sum) loss by dataset size yields the mean absolute error across the epoch. Printing this each epoch provides a simple training progress metric.</p></li>
+<li><p>Portability and small-scale notes:</p>
+<ul>
+<li>The example runs fine on CPU for demonstration and on GPU if available. For real training with larger models or data, prefer proper device-aware data loading, mixed precision, and more robust reproducibility settings.</li>
+<li>For deterministic behavior across runs and platforms, additional configuration is required (e.g., <code>torch.use_deterministic_algorithms(True)</code>), but this can reduce performance or rely on backend support.</li>
+</ul></li>
 </ul>
 
 
@@ -715,13 +727,13 @@ Runs the Python script that creates/populates <code>db/synth.db</code> and execu
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./04_makefile.html" class="pagination-link" aria-label="04 — Makefile">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">04 — Makefile</span></span>
+      <a href="./08_pytest.html" class="pagination-link" aria-label="08 — pytest (Simple Tests)">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">08 — pytest (Simple Tests)</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./06_pandas_joins_parquet.html" class="pagination-link" aria-label="06 — pandas Joins &amp; Parquet">
-        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">06 — pandas Joins &amp; Parquet</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./10_quarto_book.html" class="pagination-link" aria-label="10 — Quarto Book &amp; Rendering">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">10 — Quarto Book &amp; Rendering</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
