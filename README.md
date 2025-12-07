@@ -19,7 +19,8 @@ cd tools-in-action-Adkins
 # 2. Create virtual environment & install Python deps
 make env
 
-# 3. Generate data, database, and features
+# 3. Generate fresh data, database, and features
+make clean
 make data
 make db
 make features
